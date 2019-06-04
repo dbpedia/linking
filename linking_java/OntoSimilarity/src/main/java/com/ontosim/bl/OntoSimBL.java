@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.search.EntitySearcher;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ontosim.cnst.OntoConst;
 import com.ontosim.model.OntoFileModel;
 import com.ontosim.model.OntoSimClsModel;
 import com.ontosim.model.OntoSimObjPropModel;
@@ -242,7 +243,9 @@ public class OntoSimBL {
 
 			for (OWLClass parent : supCls) {
 				String parentVal = parent.getIRI().toString();
-				parents.add(parentVal);
+				if(!(OntoConst.OntoThngCnst.equals(parentVal) || OntoConst.OntoNoThngCnst.equals(parentVal))){
+					parents.add(parentVal);
+				}
 			}
 			ontoMap.get(key).setParentCls(parents);
 
@@ -252,7 +255,9 @@ public class OntoSimBL {
 
 			for (OWLClass child : subCls) {
 				String childVal = child.getIRI().toString();
-				children.add(childVal);
+				if(!(OntoConst.OntoThngCnst.equals(childVal) || OntoConst.OntoNoThngCnst.equals(childVal))){
+					children.add(childVal);
+				}
 			}
 			ontoMap.get(key).setChildCls(children);
 
@@ -274,10 +279,35 @@ public class OntoSimBL {
 				// this is to remove < and > from the value
 				disjntVal = disjntVal.substring(1, disjntVal.length() - 1);
 				if (!disjntVal.equals(key)) {
-					strLst.add(disjntVal);
+					if(!(OntoConst.OntoThngCnst.equals(disjntVal) || OntoConst.OntoNoThngCnst.equals(disjntVal))){
+						strLst.add(disjntVal);
+					}
 				}
 			}
-			ontoMap.get(key).setDisjointCls(strLst);
+			ontoMap.get(key).setDisjointCls(strLst);			
+		}
+		
+		//parent details is populated before
+		//outside of the for loop confirms that each class has disjoint classes.
+		//so every parent class should have disjoint class information
+		for (String key : ontoMap.keySet()) {
+			
+			List<String> existingDisjntLst = ontoMap.get(key).getDisjointCls();	
+			
+			//Now add all the disjoint class(es) of immediate parent(s)
+			List<String> parent_cls_key_arr = ontoMap.get(key).getParentCls();
+			for(String parent_cls_key : parent_cls_key_arr){
+				if(!(OntoConst.OntoThngCnst.equals(parent_cls_key) || OntoConst.OntoNoThngCnst.equals(parent_cls_key))){
+					List<String> disjnt_cls_key_arr = ontoMap.get(parent_cls_key).getDisjointCls();
+					for(String disjnt_cls_key:disjnt_cls_key_arr){
+						if(!existingDisjntLst.contains(disjnt_cls_key)){
+							existingDisjntLst.add(disjnt_cls_key);
+						}
+					}
+				}
+			}
+			
+			ontoMap.get(key).setDisjointCls(existingDisjntLst);
 		}
 	}
 
@@ -296,12 +326,38 @@ public class OntoSimBL {
 				// this is to remove < and > from the value
 				eqVal = eqVal.substring(1, eqVal.length() - 1);
 				if (!eqVal.equals(key)) {
-					strLst.add(eqVal);
+					if(!(OntoConst.OntoThngCnst.equals(eqVal) || OntoConst.OntoNoThngCnst.equals(eqVal))){
+						strLst.add(eqVal);
+					}
 				}
 			}
 			ontoMap.get(key).setEqCls(strLst);
-
 		}
+		
+		
+		
+		//parent details is populated before
+		//outside of the for loop confirms that each class has disjoint classes.
+		//so every parent class should have disjoint class information
+		for (String key : ontoMap.keySet()) {
+			
+			List<String> existingEqLst = ontoMap.get(key).getEqCls();	
+			
+			//Now add all the disjoint class(es) of immediate parent(s)
+			List<String> parent_cls_key_arr = ontoMap.get(key).getParentCls();
+			for(String parent_cls_key : parent_cls_key_arr){
+				if(!(OntoConst.OntoThngCnst.equals(parent_cls_key) || OntoConst.OntoNoThngCnst.equals(parent_cls_key))){
+					List<String> eq_cls_key_arr = ontoMap.get(parent_cls_key).getEqCls();
+					for(String eq_cls_key:eq_cls_key_arr){
+						if(!existingEqLst.contains(eq_cls_key)){
+							existingEqLst.add(eq_cls_key);
+						}
+					}
+				}
+			}			
+			ontoMap.get(key).setEqCls(existingEqLst);
+		}
+		
 
 	}
 
@@ -335,6 +391,39 @@ public class OntoSimBL {
 			}
 			ontoMap.get(key).setRestriction(restrictionMap);
 		}
+		
+		
+		//parent details is populated before
+		//outside of the for loop confirms that each class has restriction classes.
+		//so every parent class should have restriction class information
+		for (String key : ontoMap.keySet()) {
+			
+			Map<String,List<String>> existingEqMap = ontoMap.get(key).getRestriction();	
+			
+			//Now add all the restriction class(es) of immediate parent(s)
+			List<String> parent_cls_key_arr = ontoMap.get(key).getParentCls();
+			for(String parent_cls_key : parent_cls_key_arr){
+				if(!(OntoConst.OntoThngCnst.equals(parent_cls_key) || OntoConst.OntoNoThngCnst.equals(parent_cls_key))){
+					Map<String,List<String>> res_cls_key_Map = ontoMap.get(parent_cls_key).getRestriction();
+					for(Map.Entry<String,List<String>> eq_cls:res_cls_key_Map.entrySet()){
+						String eq_cls_key = eq_cls.getKey();
+						List<String> eq_cls_vals = eq_cls.getValue();
+						
+						List<String> existingLst = existingEqMap.get(eq_cls_key);
+						if(existingLst==null){
+							existingLst = new ArrayList<String>();
+						}
+						for(String eq_cls_val:eq_cls_vals){
+							if(!existingLst.contains(eq_cls_val)){
+								existingLst.add(eq_cls_val);
+							}
+						}					
+						existingEqMap.put(eq_cls_key, existingLst);
+					}				
+				}
+			}		
+			ontoMap.get(key).setRestriction(existingEqMap);
+		}		
 	}
 
 	// Example
