@@ -54,6 +54,8 @@ def plotLine(entity_dict_freq):
   p = figure(y_range=(0, 500),x_range=x_axis_val,plot_width=800, plot_height=400)
   p.line(x=x_axis_val, y=y_axis_val, line_width=2)
   p.xaxis.major_label_orientation = np.pi/4
+  p.xaxis.axis_label = "Words"
+  p.yaxis.axis_label = "Frequency"
   show(p)
 
 def plotWordCloud(entity_dict_freq):
@@ -76,10 +78,10 @@ try:
   entity_dict_freq = crtDictFreq(conf)
   
   #Plotting linegraph for frequency of each word in dictionary
-#   plotLine(entity_dict_freq)
+  plotLine(entity_dict_freq)
   
   #Plotting wordcloud of each word in dictionary
-  plotWordCloud(entity_dict_freq)
+#   plotWordCloud(entity_dict_freq)
   
 #   for val in entity_dict_freq:
 #     print(val, entity_dict_freq[val])
