@@ -1,57 +1,41 @@
 package com.ontosim.model;
 
-import java.io.InputStream;
-
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-
 public class OntoFileModel {
+	boolean isAvailable;
+	String file_nm;
+	String file_typ;
+	String file;
 
-	private String fileNm;
-	private InputStream fileIpStream;
-	private OWLOntologyManager manager;
-	private OWLReasoner reasoner;
-	private OWLOntology ontology;
-	private OWLDataFactory dataFactory;
 	
-	public String getFileNm() {
-		return fileNm;
+	public boolean isAvailable() {
+		return isAvailable;
 	}
-	public void setFileNm(String fileNm) {
-		this.fileNm = fileNm;
+
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
 	}
-	public InputStream getFileIpStream() {
-		return fileIpStream;
+
+	public String getFile_nm() {
+		return file_nm;
 	}
-	public void setFileIpStream(InputStream fileIpStream) {
-		this.fileIpStream = fileIpStream;
+
+	public void setFile_nm(String file_nm) {
+		this.file_nm = file_nm;
 	}
-	public OWLOntologyManager getManager() {
-		return manager;
+
+	public String getFile_typ() {
+		return file_typ;
 	}
-	public void setManager(OWLOntologyManager manager) {
-		this.manager = manager;
+
+	public void setFile_typ(String file_typ) {
+		this.file_typ = file_typ;
 	}
-	public OWLReasoner getReasoner() {
-		return reasoner;
+
+	public String getFile() {
+		return file;
 	}
-	public void setReasoner(OWLReasoner reasoner) {
-		this.reasoner = reasoner;
+
+	public void setFile(String file) {
+		this.file = file;
 	}
-	public OWLOntology getOntology() {
-		return ontology;
-	}
-	public void setOntology(OWLOntology ontology) {
-		this.ontology = ontology;
-	}
-	public OWLDataFactory getDataFactory() {
-		return dataFactory;
-	}
-	public void setDataFactory(OWLDataFactory dataFactory) {
-		this.dataFactory = dataFactory;
-	}
-	
-	
 }
