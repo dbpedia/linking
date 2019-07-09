@@ -1,0 +1,16 @@
+This is pg-2
+<html lang="en">
+
+<body>
+	<label for="onto2FileFieldSrc">Select a Source: </label>
+	<input type="file" id ="onto2FileFieldSrc" (change)="onFileSelectedSrc($event)"/>
+
+	<label for="onto2FileFieldTrgt">Select a Target: </label>
+	<input type="file" id ="onto2FileFieldTrgt" (change)="onFileSelectedTrgt($event)"/>
+
+
+	<button (click)="crtDictFile()">Upload File</button>
+</body>
+
+
+</html>

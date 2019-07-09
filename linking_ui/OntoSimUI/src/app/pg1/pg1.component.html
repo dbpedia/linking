@@ -1,0 +1,15 @@
+This is pg-1
+<html lang="en">
+
+<body>
+	<label for="onto1FileFieldSrc">Select a Source: </label>
+	<input type="file" id ="onto1FileFieldSrc" (change)="onFileSelectedSrc($event)"/>
+
+	<label for="onto1FileFieldTrgt">Select a Target: </label>
+	<input type="file" id ="onto1FileFieldTrgt" (change)="onFileSelectedTrgt($event)"/>
+
+
+	<button (click)="uploadOWLFile()">Upload File</button>
+</body>
+
+</html>
