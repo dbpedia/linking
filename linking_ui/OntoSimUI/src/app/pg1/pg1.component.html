@@ -1,15 +1,18 @@
-This is pg-1
-<html lang="en">
-
-<body>
-	<label for="onto1FileFieldSrc">Select a Source: </label>
-	<input type="file" id ="onto1FileFieldSrc" (change)="onFileSelectedSrc($event)"/>
-
-	<label for="onto1FileFieldTrgt">Select a Target: </label>
-	<input type="file" id ="onto1FileFieldTrgt" (change)="onFileSelectedTrgt($event)"/>
-
-
-	<button (click)="uploadOWLFile()">Upload File</button>
-</body>
-
-</html>
+<table class="table table-hover">
+	<tr>
+		<td> <label> This is pg-1 </label> </td>
+		<td></td>
+	</tr>
+	<tr>
+		<td> <label for="onto1FileFieldSrc">Select a Source: </label> </td>
+		<td> <input type="file" id ="onto1FileFieldSrc" ng2FileSelect (change)="onFileSelectedSrc($event)"/> </td>
+	</tr>
+	<tr>
+		<td> <label for="onto1FileFieldTrgt">Select a Target: </label> </td>
+		<td> <input type="file" id ="onto1FileFieldTrgt" (change)="onFileSelectedTrgt($event)"/> </td>
+	</tr>
+	<tr>
+		<td><button (click)="uploadOWLFile()" class="btn btn-success btn-s">Upload File</button></td>
+		<td></td>
+	</tr>
+</table>
