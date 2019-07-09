@@ -1,17 +1,26 @@
 import nltk
-#nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
 import re
 import json
 import traceback
+import base64
+
+
+# In[10]:
+
 
 #load gloabal variables
-colab_code_path = "/content/drive/My Drive/deep_learning/OntoSimilarity/"
+# colab_code_path = "/content/drive/My Drive/deep_learning/OntoSimilarity/"
+colab_code_path = ""
 code_path = colab_code_path
 #local_code_path = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/FinalCode/GCP/OntoSimilarity/"
 #code_path = local_code_path
 #gcp_code_path = "/home/jaydeep_chakraborty_1988/research/OntoSimilarity/"
 #code_path = gcp_code_path
+
+
+# In[11]:
+
 
 def assignVar():
   
@@ -22,29 +31,17 @@ def assignVar():
       'trgt_op_fl_nm' : 'data/ip_op/target.json'
   }
   
-  conf_2 = {
-      'src_ip_fl_nm' : 'data/eclipse/source_ObjProp.json',
-      'trgt_ip_fl_nm' : 'data/eclipse/target_ObjProp.json',
-      'src_op_fl_nm' : 'data/ip_op/source_ObjProp.json',
-      'trgt_op_fl_nm' : 'data/ip_op/target_ObjProp.json'
-  }
-  
-  conf_3 = {
-      'src_ip_fl_nm' : 'data/eclipse/source_Rel.json',
-      'trgt_ip_fl_nm' : 'data/eclipse/target_Rel.json',
-      'src_op_fl_nm' : 'data/ip_op/source_Rel.json',
-      'trgt_op_fl_nm' : 'data/ip_op/target_Rel.json'
-  }
-  
   
   conf_arr = []
   conf_arr.append(conf_1)
-  conf_arr.append(conf_2)
-  conf_arr.append(conf_3)
-  
-  return conf_arr
+    
+  return conf_arr  
 
-def loadSourceTarget(conf):
+
+# In[12]:
+
+
+def loadSourceTargetLocal(conf):
     source_fl_nm = conf['src_ip_fl_nm']
     target_fl_nm = conf['trgt_ip_fl_nm']
     
@@ -57,6 +54,20 @@ def loadSourceTarget(conf):
         target_data = json.load(f)
         
     return source_data, target_data
+
+def loadSourceTarget(req_data):
+
+    src_val = req_data["src_in_data"]["file"].replace("data:application/json;base64,","")
+    source_data = json.loads(base64.b64decode(src_val).decode('utf-8'))
+    
+    trgt_val = req_data["trgt_in_data"]["file"].replace("data:application/json;base64,","")
+    target_data = json.loads(base64.b64decode(trgt_val).decode('utf-8'))
+        
+    return source_data, target_data
+
+
+# In[13]:
+
 
 def modfWord(word):
   word = word.lower()
@@ -118,6 +129,10 @@ def int_to_roman(input):
           raise (ValueError, 'input is not a valid Roman numeral: %s' % intVal_Tmp)
   
   return sum
+
+
+# In[14]:
+
 
 def crtAltLbl(conf, data):
 
@@ -193,7 +208,11 @@ def crtAltLblUtl(conf, source_data, target_data):
     
   return source_data, target_data
 
-def saveSrcTrgt(source_data, target_data, conf):
+
+# In[15]:
+
+
+def saveSrcTrgtLocal(source_data, target_data, conf):
   
   with open(code_path+conf['src_op_fl_nm'], 'w') as outfile:
     json.dump(source_data, outfile, indent=4)
@@ -201,21 +220,57 @@ def saveSrcTrgt(source_data, target_data, conf):
   with open(code_path+conf['trgt_op_fl_nm'], 'w') as outfile:
     json.dump(target_data, outfile, indent=4)
 
-#################### MAIN CODE START ####################
-try:  
-  conf_arr = assignVar()
-  
-  for conf in conf_arr:
-  
-    source_data, target_data = loadSourceTarget(conf) 
+def saveSrcTrgt(source_data, target_data, conf, req_data):
     
-    source_data, target_data = crtAltLblUtl(conf, source_data, target_data)
-  
-    saveSrcTrgt(source_data, target_data, conf)
-  
-except Exception:
-   print(traceback.format_exc())
-finally:
-  print("#################### FINISH ####################")
+    source_json = json.dumps(source_data)
+    req_data["src_op_data"]["file_nm"] = "source.json"
+    req_data["src_op_data"]["file_typ"] = "json"
+    print(type(base64.b64encode(source_json.encode('utf-8'))))
+    req_data["src_op_data"]["file"] = base64.b64encode(source_json.encode('utf-8')).decode('ascii')
+
+    
+    target_json = json.dumps(target_data)
+    req_data["trgt_op_data"]["file_nm"] = "target_json.json"
+    req_data["trgt_op_data"]["file_typ"] = "json"
+    req_data["trgt_op_data"]["file"] = base64.b64encode(target_json.encode('utf-8')).decode('ascii')
+
+    
+    return req_data
+
+
+# In[16]:
+
+
+#################### MAIN CODE START ####################
+def modifyLblMain(isLocal,req_data):
+    try:  
+      conf_arr = assignVar()
+
+      for conf in conf_arr:
+          if(isLocal):
+              source_data, target_data = loadSourceTargetLocal(conf) #from local file
+          else:
+              source_data, target_data = loadSourceTarget(req_data) #from web service
+                      
+          source_data, target_data = crtAltLblUtl(conf, source_data, target_data)
+
+          if(isLocal):
+            saveSrcTrgtLocal(source_data, target_data, conf)
+          else:
+            retVal = saveSrcTrgt(source_data, target_data, conf, req_data)
+
+      return req_data
+
+    except Exception:
+       print(traceback.format_exc())
+    finally:
+      print("#################### FINISH ####################")
   
 #################### MAIN CODE END ####################
+
+
+# In[ ]:
+
+
+#modifyLblMain(True, null)
+
