@@ -22,6 +22,7 @@ linking_java/OntoSimilarity/.classpath
 # For Maven
 
 target/
+.env/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
