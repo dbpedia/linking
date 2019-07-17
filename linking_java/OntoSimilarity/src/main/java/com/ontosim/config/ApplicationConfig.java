@@ -14,6 +14,7 @@ public class ApplicationConfig extends Application{
 
     @Override
     public Set<Class<?>> getClasses() {
+    	System.out.println("Application Config");
         final Set<Class<?>> returnValue = new HashSet<Class<?>>();
         returnValue.add(OntoSimService.class);
         returnValue.add(CorsFilter.class);

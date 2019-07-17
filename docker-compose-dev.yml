@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+ py-service:
+  image: ontosimpy:v1
+  build: ./Python/OntoSimilarity_GSOC_local/py_files/
+  volumes:
+   - ./Python/OntoSimilarity_GSOC_local/py_files/OntoSimPY:/app
+  ports:
+   - 5000:5000
+
+ java-service:
+  image: ontosimjava:v1
+  build: ./Java/OntoSimilarity/
+  volumes:
+   - ./Java/OntoSimilarity
+  ports:
+   - 8080:8080
+
+ ui-service:
+  image: ontosimui:v1
+  build: ./Angular/OntoSimUI/
+  volumes:
+   - ./Angular/OntoSimUI/
+  ports:
+   - 80:80

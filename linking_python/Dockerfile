@@ -8,6 +8,6 @@ RUN apt-get update
 RUN apt-get install -y python python-pip wget
 RUN pip install -r requirements.txt
 
-EXPOSE 8000
+EXPOSE 5000
 
 CMD ["python", "OntoSimPY/OntoSimPyMain.py" ]

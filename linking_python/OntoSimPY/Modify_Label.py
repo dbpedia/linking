@@ -1,4 +1,5 @@
 import nltk
+nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
 import re
 import json
@@ -261,10 +262,11 @@ def modifyLblMain(isLocal,req_data):
 
       return req_data
 
-    except Exception:
-       print(traceback.format_exc())
+    except Exception as exp:
+        print(traceback.format_exc())
+        raise exp
     finally:
-      print("#################### FINISH ####################")
+        print("#################### FINISH ####################")
   
 #################### MAIN CODE END ####################
 

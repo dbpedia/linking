@@ -1,6 +1,7 @@
 export class Appconst {
 
-    public static pyUrl = "http://localhost:5002/OntoSimPyMain/ontorestservice/";
+    public static pyUrl = "http://localhost:5000/OntoSimPyMain/ontorestservice/";
+    //public static pyUrl = "http://py-service:8000/OntoSimPyMain/ontorestservice/";
     public static pyInd = "ontopy";
     public static pyInd_1 = "ontopy/task2";
 

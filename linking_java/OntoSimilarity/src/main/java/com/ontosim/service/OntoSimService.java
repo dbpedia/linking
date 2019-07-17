@@ -1,6 +1,7 @@
 package com.ontosim.service;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -25,6 +26,10 @@ public class OntoSimService {
 
 		String retJSONStr = "";
 		try {
+			if("".equals(ontoInput)){
+				return retJSONStr;
+			}
+			
 			OntoServiceModel ontoServiceModel = owlUtil.convertToServiceModel(ontoInput);
 
 			String srcBase64_Fl = ontoSimBL.ontoSimBL(ontoServiceModel.getSrc_in_data());
@@ -48,6 +53,12 @@ public class OntoSimService {
 		}
 
 		return retJSONStr;
+	}
+	
+	@GET
+	@Path("testtask")
+	public String testWebService() {
+		return "Ontosim : java web service is working!";
 	}
 
 }

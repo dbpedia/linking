@@ -23,7 +23,7 @@ export class Pg2Component implements OnInit {
   }
 
 
-	onFileSelectedSrc(event){
+	onFileSelectedSrc2(event){
 	var file:File = event.target.files[0];
 
 	var reader:FileReader = new FileReader();
@@ -38,7 +38,7 @@ export class Pg2Component implements OnInit {
 
 	}
 
-	onFileSelectedTrgt(event){
+	onFileSelectedTrgt2(event){
 	var file:File = event.target.files[0];
 
 	var reader:FileReader = new FileReader();
@@ -59,7 +59,7 @@ export class Pg2Component implements OnInit {
 
 	    this._uploadService.call_onto_service(this.ontosim_data)
 	    .subscribe(result => {
-	    	console.log(result);
+	
 	    	this._apputilService.downloadFile(result["src_op_data"]);
 	    	this._apputilService.downloadFile(result["trgt_op_data"]);
 

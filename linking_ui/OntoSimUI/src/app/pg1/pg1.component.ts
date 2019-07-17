@@ -24,7 +24,7 @@ export class Pg1Component implements OnInit {
     this.ontosim_data = this._apputilService.getJSON();
   }
 
-  onFileSelectedSrc(event){
+  onFileSelectedSrc1(event){
     var file:File = event.target.files[0];
 
     var reader:FileReader = new FileReader();
@@ -38,7 +38,7 @@ export class Pg1Component implements OnInit {
 
   }
 
-  onFileSelectedTrgt(event){
+  onFileSelectedTrgt1(event){
     var file:File = event.target.files[0];
 
     var reader:FileReader = new FileReader();
