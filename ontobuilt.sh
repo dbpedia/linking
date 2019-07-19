@@ -56,8 +56,9 @@ then
     docker-compose -f docker-compose-prod.yml down
 elif [ "$actnm" = $DEL ]
 then
-    docker rm $(docker ps -a -q)
-    docker rmi $(docker images -q)
+    docker rmi -f $(docker images -q ontosimui:v1)
+    docker rmi -f $(docker images -q ontosimjava:v1)
+    docker rmi -f $(docker images -q ontosimpy:v1)
 else
     echo "Environment or Activity is  not recognised"
 fi
