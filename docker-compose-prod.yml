@@ -13,7 +13,7 @@ services:
   image: ontosimjava:v1
   build: ./linking_java/OntoSimilarity/
   volumes:
-   - ./linking_java/OntoSimilarity
+      - ./linking_java/OntoSimilarity:/app
   ports:
    - 8080:8080
 
@@ -21,6 +21,6 @@ services:
   image: ontosimui:v1
   build: ./linking_ui/OntoSimUI/
   volumes:
-   - ./linking_ui/OntoSimUI/
+      - ./linking_ui/OntoSimUI:/app
   ports:
    - 80:80
