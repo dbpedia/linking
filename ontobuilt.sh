@@ -12,6 +12,7 @@ PROD="prod"
 START="start"
 STOP="stop"
 DEL="del"
+BUILD_NEEDED="False"
 
 scriptflnm=$0
 echo "${scriptflnm} is running"
@@ -37,28 +38,27 @@ fi
 if [ "$envnm" = $DEV ] && [ "$actnm" = $START ]
 then
     docker-compose -f docker-compose-dev.yml up --build
-elif [ "$envnm" = $TEST ] && [ "$actnm" = $START ]
-then
-    docker-compose -f docker-compose-test.yml up --build
 elif [ "$envnm" = $PROD ] && [ "$actnm" = $START ]
 then
-    docker-compose -f docker-compose-prod.yml up --build
+    if [[ $(docker images -q ontosimui:v1) = "" ]]; then  BUILD_NEEDED="True"; fi
+    if [[ $(docker images -q ontosimjava:v1) = "" ]]; then  BUILD_NEEDED="True"; fi
+    if [[ $(docker images -q ontosimpy:v1) == "" ]]; then BUILD_NEEDED="True"; fi
+	if [ $BUILD_NEEDED = "True" ]; then
+        docker-compose -f docker-compose-prod.yml up --build
+    else
+        docker-compose -f docker-compose-prod.yml up --no-build
+	fi
 elif [  "$envnm" = $DEV ] && [ "$actnm" = $STOP ]
 then
     docker-compose -f docker-compose-dev.yml down
-    docker image prune #Remove unused images
-elif [  "$envnm" = $TEST ] && [ "$actnm" = $STOP ]
-then
-    docker-compose -f docker-compose-test.yml down
-    docker image prune #Remove unused images
 elif [  "$envnm" = $PROD ] && [ "$actnm" = $STOP ]
 then
     docker-compose -f docker-compose-prod.yml down
-    docker image prune #Remove unused images
 elif [ "$actnm" = $DEL ]
 then
-    docker rm $(docker ps -a -q)
-    docker rmi $(docker images -q)
+    docker rmi -f $(docker images -q ontosimui:v1)
+    docker rmi -f $(docker images -q ontosimjava:v1)
+    docker rmi -f $(docker images -q ontosimpy:v1)
 else
     echo "Environment or Activity is  not recognised"
 fi

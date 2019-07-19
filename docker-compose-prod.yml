@@ -5,22 +5,22 @@ services:
   image: ontosimpy:v1
   build: ./linking_python/
   volumes:
-   - ./linking_python/OntoSimPY:/app
+  - ./linking_python/OntoSimPY:/app
   ports:
-   - 5000:5000
+  - 5000:5000
 
  java-service:
   image: ontosimjava:v1
   build: ./linking_java/OntoSimilarity/
   volumes:
-   - ./linking_java/OntoSimilarity
+  - ./linking_java/OntoSimilarity:/app
   ports:
-   - 8080:8080
+  - 8080:8080
 
  ui-service:
   image: ontosimui:v1
   build: ./linking_ui/OntoSimUI/
   volumes:
-   - ./linking_ui/OntoSimUI/
+  - ./linking_ui/OntoSimUI:/app
   ports:
-   - 80:80
+  - 80:80
