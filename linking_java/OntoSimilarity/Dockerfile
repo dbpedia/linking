@@ -1,6 +1,6 @@
 FROM maven:latest AS mvnontosimdocker
 
-# image layer
+# build layer
 WORKDIR /app
 ADD pom.xml /app
 COPY . /app
@@ -8,20 +8,10 @@ COPY . /app
 RUN mvn -v
 RUN mvn package
 
-
-#RUN pwd
-#RUN ls -l
-#RUN ls -l target
-
-
+# tomcat-server
 FROM tomcat:9.0-jre8-alpine
-
-COPY --from=mvnontosimdocker /app/target/OntoSimilarity.war $CATALINA_HOME/webapps/OntoSimilarity.war
-
-
-#RUN pwd
-#RUN ls -l
-#RUN ls -l webapps/
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY --from=mvnontosimdocker /app/target/OntoSimilarity.war $CATALINA_HOME/webapps/ROOT.war
 
 EXPOSE 8080
 
