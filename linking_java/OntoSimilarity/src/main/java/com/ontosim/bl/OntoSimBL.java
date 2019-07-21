@@ -41,7 +41,6 @@ import com.ontosim.util.OWLUtil;
 
 public class OntoSimBL {
 
-	
 	OWLUtil owlUtil = new OWLUtil();
 
 	public String ontoSimBL(OntoFileModel file) throws Exception {
@@ -72,7 +71,7 @@ public class OntoSimBL {
 		 * 4) Write the Class output into json file and download
 		 */
 		File retFile = this.writeJson(file.getFile_nm() + ".json", ontoClsMap);
-		
+
 		/**
 		 * 5) Convert File to String
 		 */
@@ -112,13 +111,13 @@ public class OntoSimBL {
 	}
 
 	private OntoInfoModel decodeFile(OntoFileModel file, OntoInfoModel ontoFlModel) throws Exception {
-		
+
 		return owlUtil.decodeFile(file, ontoFlModel);
 
 	}
-	
+
 	private String encodeFile(File file) throws Exception {
-		
+
 		return owlUtil.encodeFile(file);
 
 	}
@@ -150,7 +149,7 @@ public class OntoSimBL {
 				}
 			}
 		});
-		
+
 	}
 
 	public void getHierarchyDtls(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) {
@@ -164,7 +163,7 @@ public class OntoSimBL {
 
 			for (OWLClass parent : supCls) {
 				String parentVal = parent.getIRI().toString();
-				if(!(OntoConst.OntoThngCnst.equals(parentVal) || OntoConst.OntoNoThngCnst.equals(parentVal))){
+				if (!(OntoConst.OntoThngCnst.equals(parentVal) || OntoConst.OntoNoThngCnst.equals(parentVal))) {
 					parents.add(parentVal);
 				}
 			}
@@ -176,7 +175,7 @@ public class OntoSimBL {
 
 			for (OWLClass child : subCls) {
 				String childVal = child.getIRI().toString();
-				if(!(OntoConst.OntoThngCnst.equals(childVal) || OntoConst.OntoNoThngCnst.equals(childVal))){
+				if (!(OntoConst.OntoThngCnst.equals(childVal) || OntoConst.OntoNoThngCnst.equals(childVal))) {
 					children.add(childVal);
 				}
 			}
@@ -200,34 +199,36 @@ public class OntoSimBL {
 				// this is to remove < and > from the value
 				disjntVal = disjntVal.substring(1, disjntVal.length() - 1);
 				if (!disjntVal.equals(key)) {
-					if(!(OntoConst.OntoThngCnst.equals(disjntVal) || OntoConst.OntoNoThngCnst.equals(disjntVal))){
+					if (!(OntoConst.OntoThngCnst.equals(disjntVal) || OntoConst.OntoNoThngCnst.equals(disjntVal))) {
 						strLst.add(disjntVal);
 					}
 				}
 			}
-			ontoMap.get(key).setDisjointCls(strLst);			
+			ontoMap.get(key).setDisjointCls(strLst);
 		}
-		
-		//parent details is populated before
-		//outside of the for loop confirms that each class has disjoint classes.
-		//so every parent class should have disjoint class information
+
+		// parent details is populated before
+		// outside of the for loop confirms that each class has disjoint
+		// classes.
+		// so every parent class should have disjoint class information
 		for (String key : ontoMap.keySet()) {
-			
-			List<String> existingDisjntLst = ontoMap.get(key).getDisjointCls();	
-			
-			//Now add all the disjoint class(es) of immediate parent(s)
+
+			List<String> existingDisjntLst = ontoMap.get(key).getDisjointCls();
+
+			// Now add all the disjoint class(es) of immediate parent(s)
 			List<String> parent_cls_key_arr = ontoMap.get(key).getParentCls();
-			for(String parent_cls_key : parent_cls_key_arr){
-				if(!(OntoConst.OntoThngCnst.equals(parent_cls_key) || OntoConst.OntoNoThngCnst.equals(parent_cls_key))){
+			for (String parent_cls_key : parent_cls_key_arr) {
+				if (!(OntoConst.OntoThngCnst.equals(parent_cls_key)
+						|| OntoConst.OntoNoThngCnst.equals(parent_cls_key))) {
 					List<String> disjnt_cls_key_arr = ontoMap.get(parent_cls_key).getDisjointCls();
-					for(String disjnt_cls_key:disjnt_cls_key_arr){
-						if(!existingDisjntLst.contains(disjnt_cls_key)){
+					for (String disjnt_cls_key : disjnt_cls_key_arr) {
+						if (!existingDisjntLst.contains(disjnt_cls_key)) {
 							existingDisjntLst.add(disjnt_cls_key);
 						}
 					}
 				}
 			}
-			
+
 			ontoMap.get(key).setDisjointCls(existingDisjntLst);
 		}
 	}
@@ -242,45 +243,50 @@ public class OntoSimBL {
 			List<String> strLst = new ArrayList<String>();
 
 			while (eqItr.hasNext()) {
-				String eqVal = eqItr.next().toString();
-				// <http://human.owl#NCI_C25444>
-				// this is to remove < and > from the value
-				eqVal = eqVal.substring(1, eqVal.length() - 1);
-				if (!eqVal.equals(key)) {
-					if(!(OntoConst.OntoThngCnst.equals(eqVal) || OntoConst.OntoNoThngCnst.equals(eqVal))){
-						strLst.add(eqVal);
+				OWLClassExpression oce = eqItr.next();
+				String eqVal = oce.toString();
+				
+				if (owlUtil.isNotCls(oce.getClassExpressionType())) {
+					strLst.add(owlUtil.getComplex(eqVal));
+				} else {
+					// <http://human.owl#NCI_C25444>
+					// this is to remove < and > from the value
+					eqVal = eqVal.substring(1, eqVal.length() - 1);
+					if (!eqVal.equals(key)) {
+						if (!(OntoConst.OntoThngCnst.equals(eqVal) || OntoConst.OntoNoThngCnst.equals(eqVal))) {
+							strLst.add(eqVal);
+						}
 					}
 				}
+
 			}
-			
 
 			ontoMap.get(key).setEqCls(strLst);
 		}
-		
-		
-		
-		//parent details is populated before
-		//outside of the for loop confirms that each class has disjoint classes.
-		//so every parent class should have disjoint class information
+
+		// parent details is populated before
+		// outside of the for loop confirms that each class has disjoint
+		// classes.
+		// so every parent class should have disjoint class information
 		for (String key : ontoMap.keySet()) {
-			
-			List<String> existingEqLst = ontoMap.get(key).getEqCls();	
-			
-			//Now add all the disjoint class(es) of immediate parent(s)
+
+			List<String> existingEqLst = ontoMap.get(key).getEqCls();
+
+			// Now add all the disjoint class(es) of immediate parent(s)
 			List<String> parent_cls_key_arr = ontoMap.get(key).getParentCls();
-			for(String parent_cls_key : parent_cls_key_arr){
-				if(!(OntoConst.OntoThngCnst.equals(parent_cls_key) || OntoConst.OntoNoThngCnst.equals(parent_cls_key))){
+			for (String parent_cls_key : parent_cls_key_arr) {
+				if (!(OntoConst.OntoThngCnst.equals(parent_cls_key)
+						|| OntoConst.OntoNoThngCnst.equals(parent_cls_key))) {
 					List<String> eq_cls_key_arr = ontoMap.get(parent_cls_key).getEqCls();
-					for(String eq_cls_key:eq_cls_key_arr){
-						if(!existingEqLst.contains(eq_cls_key)){
+					for (String eq_cls_key : eq_cls_key_arr) {
+						if (!existingEqLst.contains(eq_cls_key)) {
 							existingEqLst.add(eq_cls_key);
 						}
 					}
 				}
-			}			
+			}
 			ontoMap.get(key).setEqCls(existingEqLst);
 		}
-		
 
 	}
 
@@ -305,23 +311,28 @@ public class OntoSimBL {
 						// create an object visitor to read the underlying
 						// (subClassOf) restrictions
 						subClassAxiom.getSuperClass().accept(new OWLObjectVisitor() {
-							//Restriction with "some"
+
+							// Restriction with "some"
 							public void visit(OWLObjectSomeValuesFrom someValuesFromAxiom) {
 								getQuantifiedRestriction(someValuesFromAxiom, restrictionMap);
 							}
-							//Restriction with "value" ##data property
+
+							// Restriction with "value" ##data property
 							public void visit(OWLDataHasValue hasValuesFromAxiom) {
 								getDataRestriction(hasValuesFromAxiom, restrictionMap);
 							}
-							//Restriction with "exact"
+
+							// Restriction with "exact"
 							public void visit(OWLObjectExactCardinality exactValuesFromAxiom) {
 								getCardinalityaRestriction(exactValuesFromAxiom, restrictionMap);
 							}
-							//Restriction with "min"
+
+							// Restriction with "min"
 							public void visit(OWLObjectMinCardinality minValuesFromAxiom) {
 								getCardinalityaRestriction(minValuesFromAxiom, restrictionMap);
 							}
-							//Restriction with "max"
+
+							// Restriction with "max"
 							public void visit(OWLObjectMaxCardinality maxValuesFromAxiom) {
 								getCardinalityaRestriction(maxValuesFromAxiom, restrictionMap);
 							}
@@ -331,39 +342,40 @@ public class OntoSimBL {
 			}
 			ontoMap.get(key).setRestriction(restrictionMap);
 		}
-		
-		
-		//parent details is populated before
-		//outside of the for loop confirms that each class has restriction classes.
-		//so every parent class should have restriction class information
+
+		// parent details is populated before
+		// outside of the for loop confirms that each class has restriction
+		// classes.
+		// so every parent class should have restriction class information
 		for (String key : ontoMap.keySet()) {
-			
-			Map<String,List<String>> existingEqMap = ontoMap.get(key).getRestriction();	
-			
-			//Now add all the restriction class(es) of immediate parent(s)
+
+			Map<String, List<String>> existingEqMap = ontoMap.get(key).getRestriction();
+
+			// Now add all the restriction class(es) of immediate parent(s)
 			List<String> parent_cls_key_arr = ontoMap.get(key).getParentCls();
-			for(String parent_cls_key : parent_cls_key_arr){
-				if(!(OntoConst.OntoThngCnst.equals(parent_cls_key) || OntoConst.OntoNoThngCnst.equals(parent_cls_key))){
-					Map<String,List<String>> res_cls_key_Map = ontoMap.get(parent_cls_key).getRestriction();
-					for(Map.Entry<String,List<String>> eq_cls:res_cls_key_Map.entrySet()){
+			for (String parent_cls_key : parent_cls_key_arr) {
+				if (!(OntoConst.OntoThngCnst.equals(parent_cls_key)
+						|| OntoConst.OntoNoThngCnst.equals(parent_cls_key))) {
+					Map<String, List<String>> res_cls_key_Map = ontoMap.get(parent_cls_key).getRestriction();
+					for (Map.Entry<String, List<String>> eq_cls : res_cls_key_Map.entrySet()) {
 						String eq_cls_key = eq_cls.getKey();
 						List<String> eq_cls_vals = eq_cls.getValue();
-						
+
 						List<String> existingLst = existingEqMap.get(eq_cls_key);
-						if(existingLst==null){
+						if (existingLst == null) {
 							existingLst = new ArrayList<String>();
 						}
-						for(String eq_cls_val:eq_cls_vals){
-							if(!existingLst.contains(eq_cls_val)){
+						for (String eq_cls_val : eq_cls_vals) {
+							if (!existingLst.contains(eq_cls_val)) {
 								existingLst.add(eq_cls_val);
 							}
-						}					
+						}
 						existingEqMap.put(eq_cls_key, existingLst);
-					}				
+					}
 				}
-			}		
+			}
 			ontoMap.get(key).setRestriction(existingEqMap);
-		}		
+		}
 	}
 
 	// Example
@@ -389,14 +401,13 @@ public class OntoSimBL {
 			restrictionMap.put(prop, objLst);
 		}
 	}
-	
-	public void getDataRestriction(OWLDataHasValue restriction,
-			Map<String, List<String>> restrictionMap) {
+
+	public void getDataRestriction(OWLDataHasValue restriction, Map<String, List<String>> restrictionMap) {
 		String prop = restriction.getProperty().toString();
 		String obj = restriction.getFiller().getLiteral().toString();
 		// <http://human.owl#NCI_C25444>
 		// this is to remove < and > from the value
-//		obj = obj.substring(1, obj.length() - 1);
+		// obj = obj.substring(1, obj.length() - 1);
 		if (restrictionMap.containsKey(prop)) {
 			restrictionMap.get(prop).add(obj);
 		} else {
@@ -405,7 +416,7 @@ public class OntoSimBL {
 			restrictionMap.put(prop, objLst);
 		}
 	}
-	
+
 	public void getCardinalityaRestriction(OWLObjectCardinalityRestriction restriction,
 			Map<String, List<String>> restrictionMap) {
 		String prop = restriction.getProperty().toString();

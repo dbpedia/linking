@@ -10,6 +10,7 @@ import java.util.Base64;
 import org.apache.commons.io.FileUtils;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -18,6 +19,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import com.google.gson.Gson;
+import com.ontosim.cnst.OntoConst;
 import com.ontosim.model.OntoFileModel;
 import com.ontosim.model.OntoInfoModel;
 import com.ontosim.model.OntoServiceModel;
@@ -88,11 +90,38 @@ public class OWLUtil {
 			offset += numRead;
 		}
 
+		is.close();
+		
 		if (offset < bytes.length) {
 			throw new IOException("Could not completely read file " + file.getName());
 		}
 
-		is.close();
+		
 		return bytes;
+	}
+	
+	public boolean isNotCls(ClassExpressionType metaInfo){
+		
+		if(metaInfo != ClassExpressionType.OWL_CLASS){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public String getComplex(String str){
+		str = str.replace(" ", ",")
+				.replace(OntoConst.OntoIntersectionOf, "")
+				.replace(OntoConst.OntoUnionOff, "")
+				.replace(OntoConst.OntoComplementOf, "")
+				.replace(OntoConst.OntoOneOf, "")
+				.replace(OntoConst.OntoSomeValuesFrom, "")
+				.replace(OntoConst.OntoAllValuesFrom, "")
+				.replace(OntoConst.OntoMinCardinality, "")
+				.replace(OntoConst.OntoMaxCardinality, "")
+				.replace(OntoConst.OntoExactCardinality, "")
+				.replace(OntoConst.OntoHasValuef, "");
+		
+		return str;
 	}
 }
