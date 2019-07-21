@@ -6,6 +6,7 @@ services:
   build: ./linking_python/
   volumes:
   - ./linking_python/OntoSimPY:/app
+  - ./docker_volume:/data
   ports:
   - 5000:5000
 
@@ -14,6 +15,7 @@ services:
   build: ./linking_java/OntoSimilarity/
   volumes:
   - ./linking_java/OntoSimilarity:/app
+  - ./docker_volume:/data
   ports:
   - 8080:8080
 
@@ -22,5 +24,6 @@ services:
   build: ./linking_ui/OntoSimUI/
   volumes:
   - ./linking_ui/OntoSimUI:/app
+  - ./docker_volume:/data
   ports:
   - 80:80
