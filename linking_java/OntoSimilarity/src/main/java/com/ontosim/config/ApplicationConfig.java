@@ -9,7 +9,7 @@ import javax.ws.rs.core.Application;
 import com.ontosim.service.OntoSimService;
 import com.ontosim.util.CorsFilter;
 
-@ApplicationPath("/ontorestservice") 
+@ApplicationPath("/") 
 public class ApplicationConfig extends Application{
 
     @Override

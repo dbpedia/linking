@@ -12,7 +12,7 @@ import com.ontosim.model.OntoFileModel;
 import com.ontosim.model.OntoServiceModel;
 import com.ontosim.util.OWLUtil;
 
-@Path("ontojava")
+@Path("v2")
 public class OntoSimService {
 
 	OWLUtil owlUtil = new OWLUtil();
@@ -56,7 +56,7 @@ public class OntoSimService {
 	}
 	
 	@GET
-	@Path("testtask")
+	@Path("health")
 	public String testWebService() {
 		return "Ontosim : java web service is working!";
 	}
