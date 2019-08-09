@@ -45,6 +45,7 @@ then
     mkdir -m 777 -p $BASE_DIR"/ontodata/train_test_tree"
     mkdir -m 777 -p $BASE_DIR"/ontodata/util"
     mkdir -m 777 -p $BASE_DIR"/ontodata/util/graph"
+    echo "Creating folder in ${MODEL_DIR}"
     mkdir -m 777 -p $MODEL_DIR"/model/onto_model"
     mkdir -m 777 -p $MODEL_DIR"/model/fasttext"
 
@@ -54,8 +55,7 @@ then
     then
         echo "------> Please Enter FastText pretrained model"
         read fast_txt_dir
-        echo $BASE_DIR
-        cp $fast_txt_dir $BASE_DIR"/model/fasttext"
+        cp $fast_txt_dir $MODEL_DIR"/model/fasttext"
     fi
 
 
@@ -65,7 +65,7 @@ then
     then
         echo "------> Please Enter OntoModel pretrained model"
         read onto_model_dir
-        cp $onto_model_dir $BASE_DIR"/model/onto_model"
+        cp $onto_model_dir $MODEL_DIR"/model/onto_model"
     fi
 
 fi

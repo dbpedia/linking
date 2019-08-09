@@ -82,7 +82,7 @@ def trainOnto(trees, conf):
             LOSS += loss.item()
         if ((epoch + 1) % show_epoch_info) == 0:
             print("epoch = %4d  loss = %0.10f" % ((epoch + 1), (LOSS / total_train_len)))
-            torch.save(tree_lstm_model.state_dict(), cnst.code_path + conf['model_file'] + "_" + str(epoch) + ".pt")
+            torch.save(tree_lstm_model.state_dict(), cnst.dev_onto_model_path + conf['model_file'] + "_" + str(epoch) + ".pt")
     #       print("======================\n")
     #       for name, param in tree_lstm_model.named_parameters():
     #           if param.requires_grad:
@@ -91,7 +91,7 @@ def trainOnto(trees, conf):
 
 
 def saveModel(model, conf):
-    torch.save(model.state_dict(), cnst.code_path + conf['model_file'] + "_final.pt")
+    torch.save(model.state_dict(), cnst.dev_onto_model_path + conf['model_file'] + "_final.pt")
 
 
 def sendJobStatusEmail(strt_tm, end_tm, total_time_taken):
