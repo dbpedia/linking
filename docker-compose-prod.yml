@@ -1,26 +1,24 @@
 version: '3.7'
 
 services:
+ java-service:
+  image: ontosimjava:v1
+  build: ./linking_java/OntoSimilarity/
+  ports:
+   - 8080:8080
+  tty: true
+
  py-service:
   image: ontosimpy:v1
   build: ./linking_python/
   volumes:
-  - ./linking_python/OntoSimPY:/app
+  - ./linking_python/py_model:/app
   ports:
-  - 5000:5000
-
- java-service:
-  image: ontosimjava:v1
-  build: ./linking_java/OntoSimilarity/
-  volumes:
-  - ./linking_java/OntoSimilarity:/app
-  ports:
-  - 8080:8080
+   - 5000:5000
+  tty: true
 
  ui-service:
   image: ontosimui:v1
   build: ./linking_ui/OntoSimUI/
-  volumes:
-  - ./linking_ui/OntoSimUI:/app
   ports:
-  - 80:80
+   - 80:80
