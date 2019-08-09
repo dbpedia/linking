@@ -7,6 +7,7 @@ ADD OntoSimPY/ /home/OntoSimPY
 RUN apt-get update
 RUN apt-get install -y python python-pip wget
 RUN pip install -r requirements.txt
+RUN [ "python", "-c", "import nltk; nltk.download('wordnet')" ]
 
 EXPOSE 5000
 
