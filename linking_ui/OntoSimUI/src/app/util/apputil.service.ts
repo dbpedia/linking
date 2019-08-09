@@ -16,14 +16,14 @@ export class ApputilService {
    return ontosimJSONData;
  }
 
-  public getURL(data){
-
-  	this.serviceUrl = "";
-  	if(data["ind"]["service_ind"] == Appconst.pyInd){
-		this.serviceUrl = Appconst.pyUrl+data["ind"]["op_ind"];
-	}else if(data["ind"]["service_ind"] == Appconst.javaInd){
-		this.serviceUrl = Appconst.javaUrl+data["ind"]["op_ind"];
-	}
+  public getURL(ind){
+  if(ind == "java"){
+    this.serviceUrl = Appconst.javaUrl;
+  }
+  if(ind == "py"){
+    this.serviceUrl = Appconst.pyUrl;
+  }
+  
 	return this.serviceUrl;
 
   }
@@ -54,7 +54,7 @@ export class ApputilService {
     console.log(data["file_nm"]);
     console.log(data["file_typ"]);
   	var blob = this.dataURItoBlob("data:application/octet-stream;base64,"+data["file"]);
-  	var file = new File([blob], data["file_nm"], {type: "application/json"});
+  	var file = new File([blob], data["file_nm"], {type: "application/rdf+xml"});
 
   	const url= window.URL.createObjectURL(file);
     
