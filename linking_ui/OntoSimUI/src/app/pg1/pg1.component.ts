@@ -4,8 +4,6 @@ import { Appconst } from  '../util/appconst';
 import { UploadService } from  '../util/upload.service';
 import { ApputilService } from  '../util/apputil.service';
 
-import { Pg3Component } from '../pg3/pg3.component';
-
 
 @Component({
   selector: 'app-pg1',
@@ -29,13 +27,26 @@ export class Pg1Component implements OnInit {
 
     var reader:FileReader = new FileReader();
     reader.onloadend = (e) => {
-      this.ontosim_data["src_in_data"]["file_nm"] = file.name;
-      this.ontosim_data["src_in_data"]["file_typ"] = file.type;
-      this.ontosim_data["src_in_data"]["file"] = reader.result;
+      let fl_ext = file.name.split('.').pop().toLowerCase();
+      if(fl_ext == Appconst.FILE_EXT){
+
+        this.ontosim_data["msg"]["msg_val"] = ""
+        this.ontosim_data["msg"]["msg_cause"] = ""
+
+        this.ontosim_data["src_in_data"]["file_nm"] = file.name;
+        this.ontosim_data["src_in_data"]["file_typ"] = file.type;
+        this.ontosim_data["src_in_data"]["file"] = reader.result;
+
+      }else{
+
+          this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
+          this.ontosim_data["msg"]["msg_cause"] = Appconst.ERR_MSG_1
+
+      }
+
     }
 
     reader.readAsDataURL(file); //Base64
-
   }
 
   onFileSelectedTrgt1(event){
@@ -43,33 +54,67 @@ export class Pg1Component implements OnInit {
 
     var reader:FileReader = new FileReader();
     reader.onloadend = (e) => {
-      this.ontosim_data["trgt_in_data"]["file_nm"] = file.name;
-      this.ontosim_data["trgt_in_data"]["file_typ"] = file.type;
-      this.ontosim_data["trgt_in_data"]["file"] = reader.result;
+
+
+      let fl_ext = file.name.split('.').pop().toLowerCase();
+      if(fl_ext == Appconst.FILE_EXT){
+
+
+        this.ontosim_data["msg"]["msg_val"] = ""
+        this.ontosim_data["msg"]["msg_cause"] = ""
+
+        this.ontosim_data["trgt_in_data"]["file_nm"] = file.name;
+        this.ontosim_data["trgt_in_data"]["file_typ"] = file.type;
+        this.ontosim_data["trgt_in_data"]["file"] = reader.result;
+
+      }else{
+
+          this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
+          this.ontosim_data["msg"]["msg_cause"] = Appconst.ERR_MSG_1
+
+      }
+
     }
 
     reader.readAsDataURL(file); //Base64
+  }
+
+
+  callJavaWS(){
+
+    this.ontosim_data["msg"]["msg_val"] = ""
+    this.ontosim_data["msg"]["msg_cause"] = ""
+
+   this._uploadService.call_onto_service(this.ontosim_data, 'java')
+   .subscribe(result => {
+
+	    if(result["msg"] && result["msg"]["msg_val"] != ''){
+	          this.ontosim_data["msg"]["msg_val"] = result["msg"]["msg_val"]
+	          this.ontosim_data["msg"]["msg_cause"] = result["msg"]["msg_cause"]
+	    }else{
+	          this._uploadService.call_onto_service(result, 'py')
+	          .subscribe(result2 => {
+	            	this._apputilService.downloadFile(result2["final_op_data"]);
+	          },
+	          (error2) => {
+	          	this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
+	          	this.ontosim_data["msg"]["msg_cause"] = error2.message
+	          }
+   		  );
+  	    }
+    },
+    (error) => {
+
+          this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
+          this.ontosim_data["msg"]["msg_cause"] = error.message
+
+    }
+    );
 
   }
 
 
-  uploadOWLFile(){
-    this.ontosim_data["ind"]["service_ind"] = Appconst.javaInd;
-    this.ontosim_data["ind"]["op_ind"] = Appconst.javaInd_1;
 
-    this._uploadService.call_onto_service(this.ontosim_data)
-    .subscribe(result => {
-
-    	this._apputilService.downloadFile(result["src_op_data"]);
-    	this._apputilService.downloadFile(result["trgt_op_data"]);
-
-    } );
-
-    //let saro = new Pg3Component();
-    //let retVal = saro.func("hi");
-    //console.log(retVal);
-
-  }
 
 
 }
