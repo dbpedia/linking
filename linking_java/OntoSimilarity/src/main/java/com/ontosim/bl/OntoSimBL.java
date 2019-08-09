@@ -1,7 +1,6 @@
 package com.ontosim.bl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,20 +17,19 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectVisitor;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ontosim.cnst.OntoConst;
 import com.ontosim.model.OntoFileModel;
@@ -43,7 +41,7 @@ public class OntoSimBL {
 
 	OWLUtil owlUtil = new OWLUtil();
 
-	public String ontoSimBL(OntoFileModel file) throws Exception {
+	public String ontoSimBL(OntoFileModel file, String flNm) throws Exception {
 
 		/**
 		 * Creating Variables
@@ -68,20 +66,36 @@ public class OntoSimBL {
 		this.populateClsVals(ontoFileModel, ontoClsMap);
 
 		/**
+		 * 3) populate Class Information
+		 */
+		this.getObjProps(ontoFileModel, ontoClsMap);
+
+		/**
+		 * 3) populate Class Information
+		 */
+		this.getDataProps(ontoFileModel, ontoClsMap);
+
+		/**
 		 * 4) Write the Class output into json file and download
 		 */
-		File retFile = this.writeJson(file.getFile_nm() + ".json", ontoClsMap);
+		File retFile = this.writeJson(flNm + OntoConst.FL_EXT, ontoClsMap);
 
 		/**
 		 * 5) Convert File to String
 		 */
 		String retFlStr = this.encodeFile(retFile);
 
+		/**
+		 * 6) Delete File
+		 */
+		this.delFl(retFile);
+
 		return retFlStr;
 
 	}
 
-	private void populateClsVals(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoClsMap) {
+	private void populateClsVals(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoClsMap)
+			throws Exception {
 
 		/**
 		 * 1) All concepts - rdfs:labels are loaded in ontoMap
@@ -122,12 +136,17 @@ public class OntoSimBL {
 
 	}
 
-	private OntoInfoModel initilizeOwlVar(OntoInfoModel ontoFileModel) throws OWLOntologyCreationException {
+	private void delFl(File file) throws Exception {
+		file.delete();
+	}
+
+	private OntoInfoModel initilizeOwlVar(OntoInfoModel ontoFileModel) throws Exception {
 
 		return owlUtil.initilizeOwlVar(ontoFileModel);
 	}
 
-	private void getAllConceptsWithLabels(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) {
+	private void getAllConceptsWithLabels(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap)
+			throws Exception {
 
 		Stream<OWLClass> allClasses = ontoFileModel.getOntology().classesInSignature();
 		allClasses.forEach(clazz -> {
@@ -136,23 +155,24 @@ public class OntoSimBL {
 					.getAnnotations(clazz, ontoFileModel.getOntology(), ontoFileModel.getDataFactory().getRDFSLabel())
 					.collect(Collectors.toSet());
 			String key = clazz.getIRI().toString();
-
+			String lbl = "";
 			for (OWLAnnotation anno : annoLst) {
 				OWLAnnotationValue val = anno.getValue();
 				if (val instanceof OWLLiteral) {
 					String value = ((OWLLiteral) val).getLiteral();
-					OntoSimClsModel ontoSim = new OntoSimClsModel();
-					ontoSim.setIri(key);
-					ontoSim.setLbl(value);
-
-					ontoMap.put(key, ontoSim);
+					lbl = lbl + " " + value;
 				}
 			}
+			OntoSimClsModel ontoSim = new OntoSimClsModel();
+			ontoSim.setIri(key);
+			ontoSim.setLbl(lbl);
+			ontoSim.setEntityTyp(OntoConst.CLS_TYP);
+			ontoMap.put(key, ontoSim);
 		});
 
 	}
 
-	public void getHierarchyDtls(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) {
+	public void getHierarchyDtls(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) throws Exception {
 
 		// For direct hierarchy(immediate parent and child)
 		for (String key : ontoMap.keySet()) {
@@ -184,7 +204,7 @@ public class OntoSimBL {
 		}
 	}
 
-	private void getDisjointCls(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) {
+	private void getDisjointCls(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) throws Exception {
 
 		for (String key : ontoMap.keySet()) {
 			OWLClass outerClaz = ontoFileModel.getDataFactory().getOWLClass(IRI.create(key));
@@ -233,7 +253,7 @@ public class OntoSimBL {
 		}
 	}
 
-	private void getEqCls(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) {
+	private void getEqCls(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) throws Exception {
 
 		for (String key : ontoMap.keySet()) {
 			OWLClass outerClaz = ontoFileModel.getDataFactory().getOWLClass(IRI.create(key));
@@ -245,7 +265,7 @@ public class OntoSimBL {
 			while (eqItr.hasNext()) {
 				OWLClassExpression oce = eqItr.next();
 				String eqVal = oce.toString();
-				
+
 				if (owlUtil.isNotCls(oce.getClassExpressionType())) {
 					strLst.add(owlUtil.getComplex(eqVal));
 				} else {
@@ -296,10 +316,10 @@ public class OntoSimBL {
 	// https://github.com/owlcollab/owltools/blob/master/OWLTools-Core/src/main/java/owltools/mooncat/Mooncat.java
 	// https://stackoverflow.com/questions/47980787/getting-object-properties-and-classes
 	// https://stackoverflow.com/questions/28968495/retrieve-owlrestrictions-using-the-owl-api
-	private void getRestriction(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) {
+	private void getRestriction(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) throws Exception {
 
 		for (String key : ontoMap.keySet()) {
-			Map<String, List<String>> restrictionMap = new HashMap<String, List<String>>();
+			List<String> restrictionLst = new ArrayList<String>();
 			OWLClass claz = ontoFileModel.getDataFactory().getOWLClass(IRI.create(key));
 			Iterator<OWLClassAxiom> resItr = ontoFileModel.getOntology().axioms(claz).iterator();
 			while (resItr.hasNext()) {
@@ -314,33 +334,33 @@ public class OntoSimBL {
 
 							// Restriction with "some"
 							public void visit(OWLObjectSomeValuesFrom someValuesFromAxiom) {
-								getQuantifiedRestriction(someValuesFromAxiom, restrictionMap);
+								getQuantifiedRestriction(someValuesFromAxiom, restrictionLst);
 							}
 
 							// Restriction with "value" ##data property
 							public void visit(OWLDataHasValue hasValuesFromAxiom) {
-								getDataRestriction(hasValuesFromAxiom, restrictionMap);
+								getDataRestriction(hasValuesFromAxiom, restrictionLst);
 							}
 
 							// Restriction with "exact"
 							public void visit(OWLObjectExactCardinality exactValuesFromAxiom) {
-								getCardinalityaRestriction(exactValuesFromAxiom, restrictionMap);
+								getCardinalityaRestriction(exactValuesFromAxiom, restrictionLst);
 							}
 
 							// Restriction with "min"
 							public void visit(OWLObjectMinCardinality minValuesFromAxiom) {
-								getCardinalityaRestriction(minValuesFromAxiom, restrictionMap);
+								getCardinalityaRestriction(minValuesFromAxiom, restrictionLst);
 							}
 
 							// Restriction with "max"
 							public void visit(OWLObjectMaxCardinality maxValuesFromAxiom) {
-								getCardinalityaRestriction(maxValuesFromAxiom, restrictionMap);
+								getCardinalityaRestriction(maxValuesFromAxiom, restrictionLst);
 							}
 						});
 					}
 				});
 			}
-			ontoMap.get(key).setRestriction(restrictionMap);
+			ontoMap.get(key).setRestriction(restrictionLst);
 		}
 
 		// parent details is populated before
@@ -349,32 +369,23 @@ public class OntoSimBL {
 		// so every parent class should have restriction class information
 		for (String key : ontoMap.keySet()) {
 
-			Map<String, List<String>> existingEqMap = ontoMap.get(key).getRestriction();
+			List<String> existingResLst = ontoMap.get(key).getRestriction();
 
 			// Now add all the restriction class(es) of immediate parent(s)
 			List<String> parent_cls_key_arr = ontoMap.get(key).getParentCls();
 			for (String parent_cls_key : parent_cls_key_arr) {
 				if (!(OntoConst.OntoThngCnst.equals(parent_cls_key)
 						|| OntoConst.OntoNoThngCnst.equals(parent_cls_key))) {
-					Map<String, List<String>> res_cls_key_Map = ontoMap.get(parent_cls_key).getRestriction();
-					for (Map.Entry<String, List<String>> eq_cls : res_cls_key_Map.entrySet()) {
-						String eq_cls_key = eq_cls.getKey();
-						List<String> eq_cls_vals = eq_cls.getValue();
+					List<String> res_cls_Lst = ontoMap.get(parent_cls_key).getRestriction();
+					for (String res_cls : res_cls_Lst) {
 
-						List<String> existingLst = existingEqMap.get(eq_cls_key);
-						if (existingLst == null) {
-							existingLst = new ArrayList<String>();
+						if (!existingResLst.contains(res_cls)) {
+							existingResLst.add(res_cls);
 						}
-						for (String eq_cls_val : eq_cls_vals) {
-							if (!existingLst.contains(eq_cls_val)) {
-								existingLst.add(eq_cls_val);
-							}
-						}
-						existingEqMap.put(eq_cls_key, existingLst);
 					}
 				}
 			}
-			ontoMap.get(key).setRestriction(existingEqMap);
+			ontoMap.get(key).setRestriction(existingResLst);
 		}
 	}
 
@@ -386,55 +397,100 @@ public class OntoSimBL {
 	// #restriction.getProperty().toString()
 	// Object: <http://human.owl#NCI_C12393> #restriction.getFiller().toString()
 
-	public void getQuantifiedRestriction(OWLQuantifiedObjectRestriction restriction,
-			Map<String, List<String>> restrictionMap) {
+	public void getQuantifiedRestriction(OWLQuantifiedObjectRestriction restriction, List<String> restrictionLst) {
 		String prop = restriction.getProperty().toString();
 		String obj = restriction.getFiller().toString();
 		// <http://human.owl#NCI_C25444>
 		// this is to remove < and > from the value
 		obj = obj.substring(1, obj.length() - 1);
-		if (restrictionMap.containsKey(prop)) {
-			restrictionMap.get(prop).add(obj);
-		} else {
-			List<String> objLst = new ArrayList<String>();
-			objLst.add(obj);
-			restrictionMap.put(prop, objLst);
-		}
+		String res = "(" + prop + "," + obj + ")";
+		restrictionLst.add(res);
 	}
 
-	public void getDataRestriction(OWLDataHasValue restriction, Map<String, List<String>> restrictionMap) {
+	public void getDataRestriction(OWLDataHasValue restriction, List<String> restrictionLst) {
 		String prop = restriction.getProperty().toString();
 		String obj = restriction.getFiller().getLiteral().toString();
 		// <http://human.owl#NCI_C25444>
 		// this is to remove < and > from the value
 		// obj = obj.substring(1, obj.length() - 1);
-		if (restrictionMap.containsKey(prop)) {
-			restrictionMap.get(prop).add(obj);
-		} else {
-			List<String> objLst = new ArrayList<String>();
-			objLst.add(obj);
-			restrictionMap.put(prop, objLst);
-		}
+
+		String res = "(" + prop + "," + obj + ")";
+		restrictionLst.add(res);
 	}
 
-	public void getCardinalityaRestriction(OWLObjectCardinalityRestriction restriction,
-			Map<String, List<String>> restrictionMap) {
+	public void getCardinalityaRestriction(OWLObjectCardinalityRestriction restriction, List<String> restrictionLst) {
 		String prop = restriction.getProperty().toString();
 		String obj = restriction.getFiller().toString();
 		// <http://human.owl#NCI_C25444>
 		// this is to remove < and > from the value
 		obj = obj.substring(1, obj.length() - 1);
-		if (restrictionMap.containsKey(prop)) {
-			restrictionMap.get(prop).add(obj);
-		} else {
-			List<String> objLst = new ArrayList<String>();
-			objLst.add(obj);
-			restrictionMap.put(prop, objLst);
-		}
+		String res = "(" + prop + "," + obj + ")";
+		restrictionLst.add(res);
 	}
 
-	public File writeJson(String fl_nm, Object ontoMap)
-			throws JsonGenerationException, JsonMappingException, IOException {
+	private void getObjProps(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) throws Exception {
+
+		Stream<OWLObjectProperty> allObjProps = ontoFileModel.getOntology().objectPropertiesInSignature();
+		allObjProps.forEach(objProp -> {
+
+			Set<OWLAnnotation> annoLst = EntitySearcher
+					.getAnnotations(objProp, ontoFileModel.getOntology(), ontoFileModel.getDataFactory().getRDFSLabel())
+					.collect(Collectors.toSet());
+			String key = objProp.getIRI().toString();
+			String lbl = "";
+			for (OWLAnnotation anno : annoLst) {
+				OWLAnnotationValue val = anno.getValue();
+				if (val instanceof OWLLiteral) {
+					String value = ((OWLLiteral) val).getLiteral();
+					lbl = lbl + " " + value;
+				}
+			}
+
+			if ("".equals(lbl)) {
+				lbl = key.split("#")[1];
+			}
+
+			OntoSimClsModel ontoSim = new OntoSimClsModel();
+			ontoSim.setIri(key);
+			ontoSim.setLbl(lbl);
+			ontoSim.setEntityTyp(OntoConst.OBJ_TYP);
+			ontoMap.put(key, ontoSim);
+
+		});
+
+	}
+
+	private void getDataProps(OntoInfoModel ontoFileModel, Map<String, OntoSimClsModel> ontoMap) throws Exception {
+
+		Stream<OWLDataProperty> allDataProps = ontoFileModel.getOntology().dataPropertiesInSignature();
+		allDataProps.forEach(dataProp -> {
+
+			Set<OWLAnnotation> annoLst = EntitySearcher.getAnnotations(dataProp, ontoFileModel.getOntology(),
+					ontoFileModel.getDataFactory().getRDFSLabel()).collect(Collectors.toSet());
+			String key = dataProp.getIRI().toString();
+			String lbl = "";
+			for (OWLAnnotation anno : annoLst) {
+				OWLAnnotationValue val = anno.getValue();
+				if (val instanceof OWLLiteral) {
+					String value = ((OWLLiteral) val).getLiteral();
+					lbl = lbl + " " + value;
+				}
+			}
+
+			if ("".equals(lbl)) {
+				lbl = key.split("#")[1];
+			}
+
+			OntoSimClsModel ontoSim = new OntoSimClsModel();
+			ontoSim.setIri(key);
+			ontoSim.setLbl(lbl);
+			ontoSim.setEntityTyp(OntoConst.DATA_TYP);
+			ontoMap.put(key, ontoSim);
+		});
+
+	}
+
+	public File writeJson(String fl_nm, Object ontoMap) throws Exception {
 
 		File file = new File(fl_nm);
 		ObjectMapper mapper = new ObjectMapper();
