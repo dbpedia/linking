@@ -1,12 +1,11 @@
 export class Appconst {
 
-    public static pyUrl = "http://localhost:5000/OntoSimPyMain/ontorestservice/";
-    //public static pyUrl = "http://py-service:8000/OntoSimPyMain/ontorestservice/";
-    public static pyInd = "ontopy";
-    public static pyInd_1 = "ontopy/task2";
+	
+    public static javaUrl = "http://localhost:8080/OntoSimilarity/ontorestservice/ontojava/task1";
+    public static pyUrl = "http://localhost:5000/OntoSimPyMain/ontorestservice/ontopy/task2";
 
-    public static javaUrl = "http://localhost:8080/OntoSimilarity/ontorestservice/";
-    public static javaInd = "ontojava";
-    public static javaInd_1 = "ontojava/task1";
+    public static ERR_MSG = "Error Happened";
+    public static ERR_MSG_1 = "Please Cheack File extension";
+    public static FILE_EXT = "owl";
 
 }
