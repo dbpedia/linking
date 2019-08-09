@@ -1,9 +1,5 @@
 <table class="table table-hover">
 	<tr>
-		<td> <label> This is pg-1 </label> </td>
-		<td></td>
-	</tr>
-	<tr>
 		<td> <label for="onto1FileFieldSrc">Select a Source: </label> </td>
 		<td> <input type="file" id ="onto1FileFieldSrc" ng2FileSelect (change)="onFileSelectedSrc1($event)"/> </td>
 	</tr>
@@ -12,7 +8,21 @@
 		<td> <input type="file" id ="onto1FileFieldTrgt" (change)="onFileSelectedTrgt1($event)"/> </td>
 	</tr>
 	<tr>
-		<td><button (click)="uploadOWLFile()" class="btn btn-success btn-s">Upload File</button></td>
-		<td></td>
+		<td colspan="2"><button (click)="callJavaWS()" class="btn btn-success btn-s">Upload File</button></td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<div class="alert alert-danger" *ngIf="ontosim_data.msg.msg_val != ''" 
+			style="width:700px;">
+			<strong>
+				{{ontosim_data.msg.msg_val}}
+			</strong>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<div style="overflow-y:scroll; height:400px;width:700px;">{{ontosim_data.msg.msg_cause}}</div>
+		</td>
 	</tr>
 </table>
