@@ -13,7 +13,6 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -28,7 +27,7 @@ public class OWLUtil {
 
 	public OntoInfoModel decodeFile(OntoFileModel file, OntoInfoModel ontoFlModel) throws Exception {
 		Base64.Decoder dec = Base64.getDecoder();
-		byte[] decbytes = dec.decode(file.getFile().replace("data:application/octet-stream;base64,", ""));
+		byte[] decbytes = dec.decode(file.getFile().replace(OntoConst.BASE_IND, ""));
 		ByteArrayInputStream in = new ByteArrayInputStream(decbytes);
 
 		ontoFlModel.setFileNm(file.getFile_nm());
@@ -45,7 +44,7 @@ public class OWLUtil {
 		return encodedString;
 	}
 
-	public OntoInfoModel initilizeOwlVar(OntoInfoModel ontoFlmodel) throws OWLOntologyCreationException {
+	public OntoInfoModel initilizeOwlVar(OntoInfoModel ontoFlmodel) throws Exception {
 
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontoFlmodel.getFileIpStream());
@@ -62,20 +61,19 @@ public class OWLUtil {
 		return ontoFlmodel;
 	}
 
-	public OntoServiceModel convertToServiceModel(String serviceIp) throws OWLOntologyCreationException {
+	public OntoServiceModel convertToServiceModel(String serviceIp)  throws Exception {
 		Gson gson = new Gson();
 		OntoServiceModel ontoServiceModel = gson.fromJson(serviceIp, OntoServiceModel.class);
 
 		return ontoServiceModel;
 	}
 
-	public String convertFrmServiceModel(OntoServiceModel serviceOp) throws OWLOntologyCreationException {
+	public String convertFrmServiceModel(OntoServiceModel serviceOp) throws Exception {
 		Gson gson = new Gson();
-
 		return gson.toJson(serviceOp);
 	}
 
-	public byte[] loadFile(File file) throws IOException {
+	public byte[] loadFile(File file)  throws Exception {
 		InputStream is = new FileInputStream(file);
 
 		long length = file.length();
@@ -100,7 +98,7 @@ public class OWLUtil {
 		return bytes;
 	}
 	
-	public boolean isNotCls(ClassExpressionType metaInfo){
+	public boolean isNotCls(ClassExpressionType metaInfo) throws Exception{
 		
 		if(metaInfo != ClassExpressionType.OWL_CLASS){
 			return true;
@@ -109,7 +107,7 @@ public class OWLUtil {
 		return false;
 	}
 	
-	public String getComplex(String str){
+	public String getComplex(String str) throws Exception {
 		str = str.replace(" ", ",")
 				.replace(OntoConst.OntoIntersectionOf, "")
 				.replace(OntoConst.OntoUnionOff, "")
