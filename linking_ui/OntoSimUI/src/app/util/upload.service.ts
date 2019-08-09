@@ -15,12 +15,16 @@ export class UploadService {
 
   constructor(private _httpClient : HttpClient, private _apputilService: ApputilService) {}
 
-  call_onto_service(data) {
-
-      this._url = this._apputilService.getURL(data);
+  call_onto_service(data, ind) {
+  try {
+      this._url = this._apputilService.getURL(ind);
 
   		return this._httpClient
       .post(this._url, JSON.stringify(data), {headers: {'Content-Type': 'application/json'}});
+      
+      } catch(e) {
+  		throw e;
+  }
       
   }
 
