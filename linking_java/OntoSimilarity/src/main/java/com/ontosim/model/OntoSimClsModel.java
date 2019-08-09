@@ -1,18 +1,18 @@
 package com.ontosim.model;
 
 import java.util.List;
-import java.util.Map;
 
 public class OntoSimClsModel {
 	String lbl;
 	String altLbl;
 	String iri;
 	String vector;
+	String entityTyp;
 	List<String> parentCls;
 	List<String> childCls;
 	List<String> eqCls;
 	List<String> disjointCls;
-	Map<String, List<String>> restriction;
+	List<String> restriction;
 	
 	
 	public String getLbl() {
@@ -45,10 +45,10 @@ public class OntoSimClsModel {
 	public void setDisjointCls(List<String> disjointCls) {
 		this.disjointCls = disjointCls;
 	}
-	public Map<String, List<String>> getRestriction() {
+	public List<String> getRestriction() {
 		return restriction;
 	}
-	public void setRestriction(Map<String, List<String>> restriction) {
+	public void setRestriction(List<String> restriction) {
 		this.restriction = restriction;
 	}
 	public String getVector() {
@@ -68,5 +68,11 @@ public class OntoSimClsModel {
 	}
 	public void setChildCls(List<String> childCls) {
 		this.childCls = childCls;
+	}
+	public String getEntityTyp() {
+		return entityTyp;
+	}
+	public void setEntityTyp(String entityTyp) {
+		this.entityTyp = entityTyp;
 	}
 }

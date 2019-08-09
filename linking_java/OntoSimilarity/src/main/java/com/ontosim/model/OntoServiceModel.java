@@ -4,9 +4,8 @@ public class OntoServiceModel {
 
 	OntoFileModel src_in_data;
 	OntoFileModel trgt_in_data;
-	OntoFileModel src_op_data;
-	OntoFileModel trgt_op_data;
-	OntoFileModel model;
+	OntoFileModel final_op_data;
+	OntoFileModel aux_op_data;
 	OntoFileMsg msg;
 	
 	public OntoFileModel getSrc_in_data() {
@@ -21,23 +20,17 @@ public class OntoServiceModel {
 	public void setTrgt_in_data(OntoFileModel trgt_in_data) {
 		this.trgt_in_data = trgt_in_data;
 	}
-	public OntoFileModel getSrc_op_data() {
-		return src_op_data;
+	public OntoFileModel getFinal_op_data() {
+		return final_op_data;
 	}
-	public void setSrc_op_data(OntoFileModel src_op_data) {
-		this.src_op_data = src_op_data;
+	public void setFinal_op_data(OntoFileModel final_op_data) {
+		this.final_op_data = final_op_data;
 	}
-	public OntoFileModel getTrgt_op_data() {
-		return trgt_op_data;
+	public OntoFileModel getAux_op_data() {
+		return aux_op_data;
 	}
-	public void setTrgt_op_data(OntoFileModel trgt_op_data) {
-		this.trgt_op_data = trgt_op_data;
-	}
-	public OntoFileModel getModel() {
-		return model;
-	}
-	public void setModel(OntoFileModel model) {
-		this.model = model;
+	public void setAux_op_data(OntoFileModel aux_op_data) {
+		this.aux_op_data = aux_op_data;
 	}
 	public OntoFileMsg getMsg() {
 		return msg;
