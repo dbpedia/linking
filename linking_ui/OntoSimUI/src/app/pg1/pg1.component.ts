@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { Appconst } from  '../util/appconst';
 
 import { UploadService } from  '../util/upload.service';
@@ -9,17 +9,23 @@ import { ApputilService } from  '../util/apputil.service';
   selector: 'app-pg1',
   templateUrl: './pg1.component.html',
   providers: [ UploadService, ApputilService, Appconst  ],
-  styles: []
+  styleUrls: ['pg1_component.css']
 })
 
 
 export class Pg1Component implements OnInit {
 
   ontosim_data = null;
-  constructor(private _uploadService: UploadService,private _apputilService: ApputilService) { }
+  el = null;
+
+  constructor(
+  private _uploadService: UploadService,
+  private _apputilService: ApputilService,
+  public _element: ElementRef) { }
 
   ngOnInit() {
     this.ontosim_data = this._apputilService.getJSON();
+    this.el = this._element.nativeElement;
   }
 
   onFileSelectedSrc1(event){
@@ -39,6 +45,8 @@ export class Pg1Component implements OnInit {
 
       }else{
 
+          this.makeActivate()
+          
           this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
           this.ontosim_data["msg"]["msg_cause"] = Appconst.ERR_MSG_1
 
@@ -69,6 +77,8 @@ export class Pg1Component implements OnInit {
 
       }else{
 
+          this.makeActivate()
+
           this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
           this.ontosim_data["msg"]["msg_cause"] = Appconst.ERR_MSG_1
 
@@ -84,19 +94,28 @@ export class Pg1Component implements OnInit {
 
     this.ontosim_data["msg"]["msg_val"] = ""
     this.ontosim_data["msg"]["msg_cause"] = ""
-
+    this.makeDeactivate()
+    
    this._uploadService.call_onto_service(this.ontosim_data, 'java')
    .subscribe(result => {
 
 	    if(result["msg"] && result["msg"]["msg_val"] != ''){
+
 	          this.ontosim_data["msg"]["msg_val"] = result["msg"]["msg_val"]
 	          this.ontosim_data["msg"]["msg_cause"] = result["msg"]["msg_cause"]
+
 	    }else{
+
 	          this._uploadService.call_onto_service(result, 'py')
 	          .subscribe(result2 => {
+                
+                this.makeActivate()
 	            	this._apputilService.downloadFile(result2["final_op_data"]);
 	          },
 	          (error2) => {
+
+              this.makeActivate()
+
 	          	this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
 	          	this.ontosim_data["msg"]["msg_cause"] = error2.message
 	          }
@@ -104,6 +123,8 @@ export class Pg1Component implements OnInit {
   	    }
     },
     (error) => {
+
+          this.makeActivate()
 
           this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
           this.ontosim_data["msg"]["msg_cause"] = error.message
@@ -114,7 +135,21 @@ export class Pg1Component implements OnInit {
   }
 
 
+  makeDeactivate(){
 
+    this.el.querySelector('#ontoBtnDiv').disabled = true
+    this.el.querySelector('#loadingIndicator').style.display = "block";
+
+
+
+  }
+
+  makeActivate(){
+
+    this.el.querySelector('#ontoBtnDiv').disabled = false
+    this.el.querySelector('#loadingIndicator').style.display = "none";
+  
+  }
 
 
 }

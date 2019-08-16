@@ -8,7 +8,14 @@
 		<td> <input type="file" id ="onto1FileFieldTrgt" (change)="onFileSelectedTrgt1($event)"/> </td>
 	</tr>
 	<tr>
-		<td colspan="2"><button (click)="callJavaWS()" class="btn btn-success btn-s">Upload File</button></td>
+		<td colspan="2">
+			<button (click)="callJavaWS()" class="btn btn-success btn-s" id="ontoBtnDiv" [disabled]=false>Upload File</button>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="loadingIndicator" class="spinner" style="display:none"></div>
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2">
