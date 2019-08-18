@@ -82,5 +82,5 @@ if __name__ == '__main__':
     # OntoSimUnitTest().entity_vec()
     # OntoSimUnitTest().modf_entity_vec()
     # OntoSimUnitTest().gen_word_sim()
-    # OntoSimUnitTest().onto_eval()
-    OntoSimUnitTest().onto_finish()
+    OntoSimUnitTest().onto_eval()
+    # OntoSimUnitTest().onto_finish()

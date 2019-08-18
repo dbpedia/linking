@@ -144,7 +144,8 @@ def generateRootTrees(embeddings, fasttext_model):
                 child_node_lst = child_node_lst + copy.deepcopy(tmp_tree)
 
             root_tree.children = child_node_lst
-            trees[src_embed_key] = root_tree
+            if(len(child_node_lst) != 0):
+                trees[src_embed_key] = root_tree
 
     return trees
 

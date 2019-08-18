@@ -20,10 +20,14 @@ public class OntoSimTest {
 
 		try {
 
-			String srcFlPath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_1_NCI_FMA/oaei_NCI_whole_ontology.owl";
-//			String srcFlPath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_1_NCI_FMA/oaei_FMA_small_overlapping_nci.owl";
-			String trgtFlPath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_1_NCI_FMA/oaei_FMA_small_overlapping_nci.owl";
+//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_1_NCI_FMA/";
+			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/anatomy-dataset/";
+			
+//			String srcFlPath = basePath + "oaei_NCI_whole_ontology.owl";
+//			String trgtFlPath = basePath + "oaei_FMA_small_overlapping_nci.owl";
 
+			String srcFlPath = basePath + "human.owl";
+			String trgtFlPath = basePath + "mouse.owl";
 			
 			Base64.Encoder enc = Base64.getEncoder();
 			
@@ -64,11 +68,13 @@ public class OntoSimTest {
 			}
 			
 			//Save the json data in eclipse folder
-			File srcfile = new File( "/Users/jaydeep/jaydeep_workstation/Workplace/Python/OntoSimilarity_GSOC_local/py_files/OntoSimPY/ontodata/eclipse/source.json" );
+			String opPath = "/Users/jaydeep/jaydeep_workstation/Workplace/Python/OntoSimilarity_GSOC_local/py_files/OntoSimPY/ontodata/eclipse/"; 
+			
+			File srcfile = new File( opPath + "source.json" );
 			byte[] srcbytes = org.apache.commons.codec.binary.Base64.decodeBase64(ontoServiceModel.getSrc_in_data().getFile());
 			FileUtils.writeByteArrayToFile( srcfile, srcbytes );
 			
-			File trgtfile = new File( "/Users/jaydeep/jaydeep_workstation/Workplace/Python/OntoSimilarity_GSOC_local/py_files/OntoSimPY/ontodata/eclipse/target.json" );
+			File trgtfile = new File( opPath + "target.json" );
 			byte[] trgtbytes = org.apache.commons.codec.binary.Base64.decodeBase64(ontoServiceModel.getTrgt_in_data().getFile());
 			FileUtils.writeByteArrayToFile( trgtfile, trgtbytes );
 			

@@ -163,6 +163,11 @@ public class OntoSimBL {
 					lbl = lbl + " " + value;
 				}
 			}
+			
+			if ("".equals(lbl)) {
+				lbl = key.split("#")[1];
+			}
+			
 			OntoSimClsModel ontoSim = new OntoSimClsModel();
 			ontoSim.setIri(key);
 			ontoSim.setLbl(lbl);

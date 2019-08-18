@@ -26,7 +26,11 @@ def crtPrintChildren(tree_obj):
 #http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#CSNK2A1_wt_Allele
 #http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Acute_Myelomonocytic_Leukemia_without_Abnormal_Eosinophils
 #http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Stage_I_Adult_Diffuse_Small_Cleaved_Cell_Lymphoma
-tree_row_key = "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Stage_I_Adult_Diffuse_Small_Cleaved_Cell_Lymphoma"
+#tree_row_key = "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Stage_I_Adult_Diffuse_Small_Cleaved_Cell_Lymphoma"
+
+tree_row_key = "http://human.owl#NCI_C33829"
+
+
 # root_node = Node(tree_row_key)
 tree_obj = trees[tree_row_key]
 crtPrintChildren(tree_obj)

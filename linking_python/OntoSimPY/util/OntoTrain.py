@@ -91,7 +91,7 @@ def trainOnto(trees, conf):
 
 
 def saveModel(model, conf):
-    torch.save(model.state_dict(), cnst.dev_onto_model_path + conf['model_file'] + "_final.pt")
+    torch.save(model.state_dict(), cnst.onto_model_path + conf['model_file'] + "_final.pt")
 
 
 def sendJobStatusEmail(strt_tm, end_tm, total_time_taken):

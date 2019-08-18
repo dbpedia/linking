@@ -99,12 +99,9 @@ export class Pg1Component implements OnInit {
    this._uploadService.call_onto_service(this.ontosim_data, 'java')
    .subscribe(result => {
 
-      console.log('1')
 	    if(result["msg"] && result["msg"]["msg_val"] != ''){
 
-            console.log('1')
             this.makeActivate()
-            console.log('2')
 
 	          this.ontosim_data["msg"]["msg_val"] = result["msg"]["msg_val"]
 	          this.ontosim_data["msg"]["msg_cause"] = result["msg"]["msg_cause"]
@@ -115,14 +112,12 @@ export class Pg1Component implements OnInit {
 	          .subscribe(result2 => {
                 
                 this.makeActivate()
-
+                
 	            	this._apputilService.downloadFile(result2["final_op_data"]);
 	          },
 	          (error2) => {
 
-              console.log('1')
               this.makeActivate()
-              console.log('3')
 
 	          	this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
 	          	this.ontosim_data["msg"]["msg_cause"] = error2.message
@@ -132,9 +127,7 @@ export class Pg1Component implements OnInit {
     },
     (error) => {
 
-          console.log('1')
           this.makeActivate()
-          console.log('3')
 
           this.ontosim_data["msg"]["msg_val"] = Appconst.ERR_MSG
           this.ontosim_data["msg"]["msg_cause"] = error.message
@@ -156,7 +149,6 @@ export class Pg1Component implements OnInit {
 
   makeActivate(){
 
-    console.log('2')
     this.el.querySelector('#ontoBtnDiv').disabled = false
     this.el.querySelector('#loadingIndicator').style.display = "none";
   
