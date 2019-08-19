@@ -20,7 +20,7 @@ def assignVar():
     conf_300 = {
         'train_file': 'ontodata/finalentity/300/source_300_mean.json',
         'test_file': "ontodata/finalentity/300/target_300_mean.json",
-        'model_file': "model/onto_model/model_300_mean_final.pt",
+        'model_file': "model/onto_model/model_300_mean_",
         'ws_fl_nm': "ontodata/output/word_sim/word_sim_300_mean_cosine.json",
         'vector': 300,
         'op_fl': "ontodata/output/output_final.rdf"
@@ -48,9 +48,15 @@ def loadWordsim(sim_fl):
     return sim_data
 
 
-def getmodel(conf):
+def getmodel(conf, data_src_nm):
     model = TreeLSTM(conf["vector"], conf["vector"], device)
-    model.load_state_dict(torch.load(cnst.onto_model_path + conf["model_file"], map_location='cpu'))
+
+    if(data_src_nm == cnst.ds_nm_1):
+        model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'anatomy.pt'
+    elif(data_src_nm == cnst.ds_nm_2):
+        model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'largebio_1.pt'
+
+    model.load_state_dict(torch.load(model_fl_nm, map_location='cpu'))
     return model
 
 
@@ -337,7 +343,7 @@ def saveFinalOP(final_op, conf):
 
 
 #################### Main Code START ####################
-def ontoEval():
+def ontoEval(data_src_nm):
     try:
         print("#################### OntoEvaluation START ####################")
 
@@ -349,7 +355,7 @@ def ontoEval():
 
         for conf in conf_arr:
 
-            model = getmodel(conf)
+            model = getmodel(conf, data_src_nm)
             train_data, test_data = loadEmbeddings(conf)
 
             word_sim_info = loadWordsim(conf["ws_fl_nm"])

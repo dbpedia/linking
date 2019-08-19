@@ -20,6 +20,7 @@ public interface OntoConst {
 	String ERR_MSG_1 = "Input is blank";
 	String ERR_MSG_2 = "Source file is missing";
 	String ERR_MSG_3 = "Target file is missing";
+	String ERR_MSG_4 = "Please select Data Source";
 	
 	String CLS_TYP = "Class";
 	String OBJ_TYP = "ObjectProp";

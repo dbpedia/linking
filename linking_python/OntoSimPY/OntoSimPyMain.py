@@ -20,14 +20,17 @@ class OntoSimPyMain(Resource):
     def ontoPyMtdh():
         try:
             retVal = ""
-            saveIntData(request.get_json())
-            modifyLblMain()
+            req_json = request.get_json()
+            data_src_nm = req_json['db']['db_nm']
+            print(data_src_nm)
+            saveIntData(req_json)
+            modifyLblMain(data_src_nm)
             crtDictMain()
             dictToVec()
             entityToVec()
             modEntityVec()
             genWordSim()
-            ontoEval()
+            ontoEval(data_src_nm)
             retVal = ontoFinish()
 
             retVal = json.dumps(retVal)
@@ -42,6 +45,8 @@ class OntoSimPyMain(Resource):
             retVal['msg']['msg_cause'] = str(e)
             retVal = json.dumps(retVal)
 
+        
+        gc.collect()
         return retVal
 
 

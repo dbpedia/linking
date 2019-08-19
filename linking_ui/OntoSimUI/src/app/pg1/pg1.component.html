@@ -1,5 +1,15 @@
 <table class="table table-hover">
 	<tr>
+		<td> <label> Select a Data Source: </label> </td>
+		<td>
+			<select (change)="onDBSelect($event)">
+			  <option value="">--Select--</option>
+			  <option value="Anatomy">Anatomy</option>
+			  <option value="LargeBio-track1">LargeBio-track1</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<td> <label for="onto1FileFieldSrc">Select a Source: </label> </td>
 		<td> <input type="file" id ="onto1FileFieldSrc" ng2FileSelect (change)="onFileSelectedSrc1($event)"/> </td>
 	</tr>

@@ -26,6 +26,9 @@
   "msg" : {
     "msg_val" : "",
     "msg_cause": ""
+  },
+  "db" : {
+    "db_nm" : ""
   }
 
 }

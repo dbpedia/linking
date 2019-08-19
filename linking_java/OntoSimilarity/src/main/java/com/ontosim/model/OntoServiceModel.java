@@ -2,12 +2,19 @@ package com.ontosim.model;
 
 public class OntoServiceModel {
 
+	OntoDbModel db;
 	OntoFileModel src_in_data;
 	OntoFileModel trgt_in_data;
 	OntoFileModel final_op_data;
 	OntoFileModel aux_op_data;
 	OntoFileMsg msg;
 	
+	public OntoDbModel getDb() {
+		return db;
+	}
+	public void setDb(OntoDbModel db) {
+		this.db = db;
+	}
 	public OntoFileModel getSrc_in_data() {
 		return src_in_data;
 	}

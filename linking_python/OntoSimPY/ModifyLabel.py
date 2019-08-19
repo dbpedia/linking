@@ -32,9 +32,14 @@ def loadSourceTarget(conf):
 
 
 
-def crtAltLblUtl(conf, source_data, target_data):
+def crtAltLblUtl(conf, source_data, target_data, data_src_nm):
 
-    ds_fl_nm = "ModfLbl{}".format(cnst.ds_final_nm)
+    if(data_src_nm == cnst.ds_nm_1):
+        ds_fl_nm = "ModfLbl{}".format('Anatomy')
+    elif(data_src_nm == cnst.ds_nm_2):
+        ds_fl_nm = "ModfLbl{}".format('LargeBio')
+
+
     module = __import__(ds_fl_nm)
 
     removed_fl = open(cnst.code_path + conf['removed_utl_fl_nm'], "w")
@@ -54,7 +59,7 @@ def saveSrcTrgt(source_data, target_data, conf):
 
 
 #################### MAIN CODE START ####################
-def modifyLblMain():
+def modifyLblMain(data_src_nm):
     print("#################### ModifyLabel START ####################")
     try:
         conf_arr = assignVar()
@@ -62,7 +67,7 @@ def modifyLblMain():
         for conf in conf_arr:
             source_data, target_data = loadSourceTarget(conf)
 
-            source_data, target_data = crtAltLblUtl(conf, source_data, target_data)
+            source_data, target_data = crtAltLblUtl(conf, source_data, target_data, data_src_nm)
 
             saveSrcTrgt(source_data, target_data, conf)
 

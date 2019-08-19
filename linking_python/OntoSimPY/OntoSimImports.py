@@ -13,6 +13,8 @@ import datetime
 import multiprocessing as mp
 import scipy.spatial.distance
 
+import gc
+
 import numpy as np
 
 import sys

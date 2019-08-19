@@ -37,6 +37,10 @@ public class OntoSimService {
 
 			OntoServiceModel ontoServiceModel = owlUtil.convertToServiceModel(ontoInput);
 
+			if ("".equals(ontoServiceModel.getDb().getDb_nm())) {
+				throw new OntoException(OntoConst.ERR_MSG_4);
+			}
+			
 			if (ontoServiceModel.getSrc_in_data().getFile() == null) {
 				throw new OntoException(OntoConst.ERR_MSG_2);
 			}

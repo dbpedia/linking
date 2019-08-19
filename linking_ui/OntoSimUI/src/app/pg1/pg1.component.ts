@@ -28,6 +28,13 @@ export class Pg1Component implements OnInit {
     this.el = this._element.nativeElement;
   }
 
+
+  onDBSelect(event){
+
+    let db_nm = event.target.value;
+    this.ontosim_data['db']['db_nm'] = db_nm
+  }
+
   onFileSelectedSrc1(event){
     var file:File = event.target.files[0];
 
@@ -112,7 +119,7 @@ export class Pg1Component implements OnInit {
 	          .subscribe(result2 => {
                 
                 this.makeActivate()
-                
+
 	            	this._apputilService.downloadFile(result2["final_op_data"]);
 	          },
 	          (error2) => {
