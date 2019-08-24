@@ -7,9 +7,18 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.ontosim.model.OntoDbModel;
 import com.ontosim.model.OntoFileModel;
 import com.ontosim.model.OntoServiceModel;
 import com.ontosim.service.OntoSimService;
+
+
+/**
+ * Chnage basePath, srcFlPath, trgtFlPath, opPath
+ * ontoDbModel.setDb_nm("LargeBio-track1");
+ * @author jaydeep
+ *
+ */
 
 public class OntoSimTest {
 
@@ -20,14 +29,48 @@ public class OntoSimTest {
 
 		try {
 
-//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_1_NCI_FMA/";
-			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/anatomy-dataset/";
+			//LargeBio-task-1
+//			String dbNm = "LargeBio-track1";
+//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_1_FMA_NCI_small/";
+//			String srcFlPath = basePath + "s_oaei_FMA_small_overlapping_nci.owl";
+//			String trgtFlPath = basePath + "t_oaei_NCI_small_overlapping_fma.owl";
 			
-//			String srcFlPath = basePath + "oaei_NCI_whole_ontology.owl";
-//			String trgtFlPath = basePath + "oaei_FMA_small_overlapping_nci.owl";
+			//LargeBio-task-2
+			String dbNm = "LargeBio-track2";
+			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_2_FMA_NCI_whole/";
+			String srcFlPath = basePath + "s_oaei_FMA_whole_ontology.owl";
+			String trgtFlPath = basePath + "t_oaei_NCI_whole_ontology.owl";
+			
+			//LargeBio-task-3
+//			String dbNm = "LargeBio-track3";
+//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_3_FMA_SNOMED_small/";
+//			String srcFlPath = basePath + "s_oaei_FMA_small_overlapping_snomed.owl";
+//			String trgtFlPath = basePath + "t_oaei_SNOMED_small_overlapping_fma.owl";
 
-			String srcFlPath = basePath + "human.owl";
-			String trgtFlPath = basePath + "mouse.owl";
+			//LargeBio-task-4
+//			String dbNm = "LargeBio-track4";
+//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_4_FMA_SNOMED_whole/";
+//			String srcFlPath = basePath + "s_oaei_FMA_whole_ontology.owl";
+//			String trgtFlPath = basePath + "t_oaei_SNOMED_extended_overlapping_fma_nci.owl";			
+
+			//LargeBio-task-5
+//			String dbNm = "LargeBio-track5";
+//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_5_SNOMED_NCI_small/";
+//			String srcFlPath = basePath + "s_oaei_SNOMED_small_overlapping_nci.owl";
+//			String trgtFlPath = basePath + "t_oaei_NCI_small_overlapping_snomed.owl";			
+
+			//LargeBio-task-6
+//			String dbNm = "LargeBio-track6";
+//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/LargeBio_dataset_oaei2019/local_Gen/task_6_SNOMED_NCI_whole/";
+//			String srcFlPath = basePath + "s_oaei_SNOMED_extended_overlapping_fma_nci.owl";
+//			String trgtFlPath = basePath + "t_oaei_NCI_whole_ontology.owl";			
+			
+			//Anatomy
+//			String basePath = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/anatomy-dataset/";
+//			String srcFlPath = basePath + "human.owl";
+//			String trgtFlPath = basePath + "mouse.owl";
+			
+
 			
 			Base64.Encoder enc = Base64.getEncoder();
 			
@@ -54,6 +97,10 @@ public class OntoSimTest {
 			OntoServiceModel ontoServiceModelObj = new OntoServiceModel();
 			ontoServiceModelObj.setSrc_in_data(ontoFileModelSrcIn);
 			ontoServiceModelObj.setTrgt_in_data(ontoFileModelTrgtIn);
+			
+			OntoDbModel ontoDbModel = new OntoDbModel();
+			ontoDbModel.setDb_nm(dbNm);
+			ontoServiceModelObj.setDb(ontoDbModel);
 
 			Gson gson = new Gson();
 			String ontoSimJsonIp = gson.toJson(ontoServiceModelObj);

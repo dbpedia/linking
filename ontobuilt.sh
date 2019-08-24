@@ -5,6 +5,20 @@
 #$0 -- the filename of our script
 #$1..$n -- script arguments
 
+echo ""
+echo ""
+echo '\033[32m ######## OntoConnect System ######## \033[0m'
+echo ""
+echo "\033[32m Please make sure the following requirements are maintained \033[0m"
+echo "\033[32m 1) Atleast 15GB Harddisk \033[0m"
+echo "\033[32m 2) Docker with atleast 10GB memory \033[0m"
+echo ""
+echo "\033[31m If the requirements do not meet, please exit the system \033[0m"
+echo ""
+echo "\033[32m #################################### \033[0m"
+echo ""
+echo ""
+
 DEV="dev"
 TEST="test"
 PROD="prod"

@@ -18,10 +18,10 @@ class OntoSimUnitTest(object):
             jsonObj = json.load(json_file)
         return jsonObj
 
-    def modify_label(self):
+    def modify_label(self, data_src_nm):
         print("modify label Started")
         try:
-            modifyLblMain()
+            modifyLblMain(data_src_nm)
         except Exception as e:
             print(traceback.format_exc())
 
@@ -76,11 +76,12 @@ class OntoSimUnitTest(object):
             print(traceback.format_exc())
 
 if __name__ == '__main__':
-    # OntoSimUnitTest().modify_label()
+    data_src_nm = cnst.ds_nm_2
+    # OntoSimUnitTest().modify_label(data_src_nm)
     # OntoSimUnitTest().crt_dict()
     # OntoSimUnitTest().dict_vec()
     # OntoSimUnitTest().entity_vec()
-    # OntoSimUnitTest().modf_entity_vec()
+    OntoSimUnitTest().modf_entity_vec()
     # OntoSimUnitTest().gen_word_sim()
-    OntoSimUnitTest().onto_eval()
+    # OntoSimUnitTest().onto_eval(data_src_nm)
     # OntoSimUnitTest().onto_finish()

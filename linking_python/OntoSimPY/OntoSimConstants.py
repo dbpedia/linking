@@ -1,7 +1,7 @@
 # colab_code_path = "/content/drive/My Drive/deep_learning/OntoSimilarity/"
 # code_path = colab_code_path
-# gcp_code_path = "/home/jaydeep_chakraborty_1988/research/OntoSimilarity/"
-# code_path = gcp_code_path
+#gcp_code_path = "/home/jaydeep_chakraborty_1988/ontoconn/linking_python/OntoSimPY/"
+#code_path = gcp_code_path
 
 #dev_code_path = "/Users/jaydeep/jaydeep_workstation/Workplace/Python/OntoSimilarity_GSOC_local/py_files/OntoSimPY/"
 #code_path = dev_code_path
@@ -20,6 +20,8 @@ faxt_text_model_path = prod_faxt_text_model_path
 #dev_onto_model_path = "/Users/jaydeep/jaydeep_workstation/Workplace/Python/OntoSimilarity_GSOC_local/py_files/py_model/"
 #onto_model_path = dev_onto_model_path
 
+#gcp_onto_model_path = "/home/jaydeep_chakraborty_1988/ontoconn/linking_python/py_model/"
+#onto_model_path = gcp_onto_model_path
 
 prod_onto_model_path = "/app/"
 onto_model_path = prod_onto_model_path

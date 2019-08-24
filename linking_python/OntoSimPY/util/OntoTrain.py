@@ -15,6 +15,11 @@ load_prev_model = False
 prev_model_nm = "model/onto_model/model_v1_300_mean_final.pt"
 saved_epoch = -1
 
+#load_prev_model = True
+#prev_model_nm = "model/onto_model/model_300_mean_129.pt"
+#saved_epoch = 129
+
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if (torch.cuda.is_available()):
     print("GPU is available ")
@@ -44,7 +49,7 @@ def loadTrainTree(conf):
 def trainOnto(trees, conf):
     if (load_prev_model):
         tree_lstm_model = TreeLSTM(conf['vec_dim'], conf['vec_dim'], device)
-        tree_lstm_model.load_state_dict(torch.load(cnst.code_path + prev_model_nm))
+        tree_lstm_model.load_state_dict(torch.load(cnst.onto_model_path + prev_model_nm))
     else:
         tree_lstm_model = TreeLSTM(conf['vec_dim'], conf['vec_dim'], device)
 
@@ -53,7 +58,7 @@ def trainOnto(trees, conf):
     # in-place operator, i.e to method will change the net itself moves it to device
     # but this is not true for Tensor object, for tensor you need to do this inputs = inputs.to(device)
 
-    optimizer = optim.Adam(tree_lstm_model.parameters(), lr=0.001)
+    optimizer = optim.Adam(tree_lstm_model.parameters(), lr=0.00001)
     loss_fn = nn.MSELoss()
     tree_lstm_model.train()  # setting into train mode
 
@@ -82,7 +87,7 @@ def trainOnto(trees, conf):
             LOSS += loss.item()
         if ((epoch + 1) % show_epoch_info) == 0:
             print("epoch = %4d  loss = %0.10f" % ((epoch + 1), (LOSS / total_train_len)))
-            torch.save(tree_lstm_model.state_dict(), cnst.dev_onto_model_path + conf['model_file'] + "_" + str(epoch) + ".pt")
+            torch.save(tree_lstm_model.state_dict(), cnst.onto_model_path + conf['model_file'] + "_" + str(epoch) + ".pt")
     #       print("======================\n")
     #       for name, param in tree_lstm_model.named_parameters():
     #           if param.requires_grad:
