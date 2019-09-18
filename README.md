@@ -13,10 +13,8 @@ In this workflow, we will explore reading and parsing the ontology and extractin
 2. Clone the repository
 	 `git clone https://github.com/dbpedia/linking.git`.
 3. Before starting the application, please make sure there is enough space (atleast - 15GB Harddisk) and docker with memory atleast (free memory 10GB) are available. 
-4. Deploy the application 
-	`./ontobuilt.sh prod start`
-
-For more options to start the application, read the [setup guide](https://github.com/dbpedia/linking/wiki/Setup_Guide).
+4. Deploy the application by following the steps in [setup guide](https://github.com/dbpedia/linking/wiki/Setup_Guide).
+ 
 
 ### Wiki
 The wiki for this project can be found [here](https://github.com/dbpedia/linking/wiki).
