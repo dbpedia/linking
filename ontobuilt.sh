@@ -100,8 +100,8 @@ then
     docker rmi -f $(docker images -q ontosimjava:v1)
     docker rmi -f $(docker images -q ontosimpy:v1)
     docker rmi -f $(docker images -q ontosimdrive:v1)
-    docker rmi -f $(docker images -f "dangling=true" -q)
-    docker system prune
+#docker rmi -f $(docker images -f "dangling=true" -q)
+#docker system prune
 else
     echo "\033[31m ERROR: Environment or Activity is  not recognised \033[0m"
 fi
