@@ -1,3 +1,6 @@
+import sys
+sys.path.append("./")
+
 from OntoSimImports import *
 import OntoSimConstants as cnst
 from Tree import Tree
@@ -32,6 +35,17 @@ def assignVar():
     return conf_arr
 
 
+def loadRef(ref_fl_nm):
+    gold_fl_nm = ref_fl_nm
+    with open(gold_fl_nm) as f:
+        gold_data = json.load(f)
+
+    gold_copy = {}
+    for g in gold_data:
+        gold_copy[g['targetKey']] = g['srcKey']  # mouse human
+
+    return gold_copy
+
 def loadEmbeddings(conf):
     with open(cnst.code_path + conf['train_file']) as f:
         train_data = json.load(f)
@@ -55,6 +69,16 @@ def getmodel(conf, data_src_nm):
         model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'anatomy.pt'
     elif(data_src_nm == cnst.ds_nm_2):
         model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'largebio_1.pt'
+    elif(data_src_nm == cnst.ds_nm_3):
+        model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'largebio_1.pt'
+    elif(data_src_nm == cnst.ds_nm_4):
+        model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'largebio_1.pt'
+    elif(data_src_nm == cnst.ds_nm_5):
+        model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'largebio_1.pt'
+    elif(data_src_nm == cnst.ds_nm_6):
+        model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'largebio_2.pt'
+    elif(data_src_nm == cnst.ds_nm_7):
+        model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'largebio_2.pt'
 
     model.load_state_dict(torch.load(model_fl_nm, map_location='cpu'))
     return model
@@ -295,59 +319,33 @@ def modifyWsMs(word_sim_lst, meta_sim_lst):
 
     return word_sim_lst_modf, meta_sim_lst_modf
 
-def prettify(elem):
-    """Return a pretty-printed XML string for the Element.
-    """
-    rough_string = ElementTree.tostring(elem, 'utf-8')
-    reparsed = minidom.parseString(rough_string)
-    return reparsed.toprettyxml(indent="  ")
 
-def saveFinalOP(final_op, conf):
+def prntOntoOp(trgt_key, pred_sim_sort, gold_copy, tp, fp):
+    op = []
+    for pred_sim_sort_key, pred_sim_sort_val in pred_sim_sort:
+        op.append(pred_sim_sort_key)
 
-    root_attr = {'xmlns': 'http://knowledgeweb.semanticweb.org/heterogeneity/alignment', 'xmlns:rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'xmlns:xsd': 'http://www.w3.org/2001/XMLSchema#'}
-    root = Element('rdf:RDF', root_attr)
+    tmp_range = 1
+    if trgt_key in gold_copy:
+        gold_op = gold_copy[trgt_key]
+        #top 1 ~ op[0:1]
+        if(gold_op in op[0:tmp_range]):
+            tp = tp + 1
+        else:
+            fp = fp + 1
+            # print("Mouse key:- ", trgt_key, "Actual Human key:- ", gold_op)
+            # print("entity1:- ", trgt_key, "Predicted Actual Human key~entity2:- ", op[0], "measure:- ", op[1])
 
-    alignment = SubElement(root, 'Alignment')
-
-    xml = SubElement(alignment, 'xml')
-    xml.text = 'yes'
-    level = SubElement(alignment, 'level')
-    level.text = '0'
-    type = SubElement(alignment, 'type')
-    type.text = '??'
-    onto1 = SubElement(alignment, 'onto1')
-    onto1.text = 'http://bioontology.org/projects/ontologies/fma/fmaOwlDlComponent_2_0'
-    onto2 = SubElement(alignment, 'onto2')
-    onto2.text = 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl'
-    uri1 = SubElement(alignment, 'uri1')
-    uri1.text = 'http://bioontology.org/projects/ontologies/fma/fmaOwlDlComponent_2_0'
-    uri2 = SubElement(alignment, 'uri2')
-    uri2.text = 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl'
-
-    for op in final_op:
-        map = SubElement(alignment, 'map')
-        cell = SubElement(map, 'Cell')
-        entity1 = SubElement(cell, 'entity1')
-        entity1.set('rdf:resource', op['entity1'])
-        entity2 = SubElement(cell, 'entity2')
-        entity2.set('rdf:resource', op['entity2'])
-        measure = SubElement(cell, 'measure')
-        measure.set('rdf:datatype', 'http://www.w3.org/2001/XMLSchema#float')
-        measure.text = str(op['measure'])
-        relation = SubElement(cell, 'relation')
-        relation.text = '='
+    return tp, fp
 
 
-    with open(cnst.code_path + conf["op_fl"], "w") as f:
-        f.write(prettify(root))
-
-
-#################### Main Code START ####################
 def ontoEval(data_src_nm):
     try:
         print("#################### OntoEvaluation START ####################")
 
         conf_arr = assignVar()
+        ref_fl_nm = "/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/2018/KnowledgeGraphs/anatomy-dataset/reference_final.json"
+        gold_copy = loadRef(ref_fl_nm)
 
         print('fastText model Loads START:- ' + str(datetime.datetime.now()))
         fasttext_model = load_model(cnst.faxt_text_model_path + "wiki.en.bin")
@@ -359,7 +357,9 @@ def ontoEval(data_src_nm):
             train_data, test_data = loadEmbeddings(conf)
 
             word_sim_info = loadWordsim(conf["ws_fl_nm"])
-            final_op = []
+
+            tp = 0
+            fp = 0
 
             word_wt = 0.5
             meta_wt = 0.5
@@ -367,8 +367,8 @@ def ontoEval(data_src_nm):
                 word_wt = 0.6
                 meta_wt = 0.4
 
+
             for trgt_key in word_sim_info:
-                tmp_op = {"entity1": "", "entity2": "", "measure": ""}
                 pred_key_lst = [item for item in word_sim_info[trgt_key]]  # only keys
                 trgt_trees, src_trees = getPredMetaData(trgt_key, pred_key_lst, train_data, test_data, fasttext_model)
                 meta_sim_lst = getMetaSim(trgt_trees, src_trees, model)
@@ -385,18 +385,22 @@ def ontoEval(data_src_nm):
                         pred_sim_lst.append([word_sim_key, new_sim_val])
 
                 pred_sim_sort = sorted(pred_sim_lst, key=lambda x: x[1], reverse=True)
-                tmp_op['entity1'] = trgt_key
-                op = pred_sim_sort[0]
-                tmp_op['entity2'] = op[0]
-                tmp_op['measure'] = op[1]
-                final_op.append(tmp_op)
+                tp, fp = prntOntoOp(trgt_key, pred_sim_sort, gold_copy, tp, fp)
 
-            saveFinalOP(final_op, conf)
             time.sleep(cnst.wait_time)
+            print(tp)
+            print(fp)
+
+            print("precision: " + str(tp / (tp + fp)))
+            print("recall: " + str(fp / (tp + fp)))
 
     except Exception as exp:
         raise exp
     finally:
         print("#################### OntoEvaluation FINISH ####################")
 
+
+#################### Main Code START ####################
+data_src_nm = cnst.ds_nm_1 #Anatomy
+ontoEval(data_src_nm)
 #################### Main Code END ####################
