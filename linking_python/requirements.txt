@@ -36,7 +36,7 @@ nltk==3.4.4
 numpy==1.16.4
 ordereddict==1.1
 packaging==19.0
-Pillow==6.1.0
+Pillow==6.2.0
 protobuf==3.9.0
 pybind11==2.3.0
 pyparsing==2.4.1.1
