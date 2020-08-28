@@ -1,0 +1,1 @@
+This folder should contain FAST-TEXT model
