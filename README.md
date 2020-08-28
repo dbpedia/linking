@@ -6,5 +6,5 @@ This project proposal presents an approach for ontology alignment through the us
 In this workflow, we will explore reading and parsing the ontology and extracting all necessary information about concepts and instances, generating semantic vectors for each entity with different meta information like entity hierarchy, object property, data property, and restrictions and designing User Interface based system which will show all necessary information about the workflow.
 
 ### Quickstart
-1. Project wiki: [Wiki] (https://github.com/dbpedia/linking/wiki)
-2. Project Setup: [Setup] (https://github.com/dbpedia/linking/wiki/Setup_Guide)
+1. Project wiki: (https://github.com/dbpedia/linking/wiki)
+2. Project Setup: (https://github.com/dbpedia/linking/wiki/Setup_Guide)
