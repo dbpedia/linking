@@ -8,8 +8,10 @@ buildind=$1
 if [ $buildind = "True" ];
 then
     docker build -t ontosim_imgweb:v1 -f ./OntoSim/docker/web/Dockerfile ./OntoSim
-    docker run --name ontosim_app_web ontosim_imgweb:v1
+    docker run -p 8080:8080 --name ontosim_app_web ontosim_imgweb:v1
 elif [ $buildind = "False" ];
 then
-    docker run --name ontosim_app_web ontosim_imgweb:v1
+    docker stop ontosim_app_web
+    docker rm ontosim_app_web
+    docker run -p 8080:8080 --name ontosim_app_web ontosim_imgweb:v1
 fi
