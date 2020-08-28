@@ -53,7 +53,7 @@ then
     echo ":- ${MODEL_DIR}"
     FASTTEXT_FILE=$MODEL_DIR"/model/fasttext/fast.bin"
 
-    echo -e "$FASTTEXT_FILE"
+    echo -e "\033[34m >> $FASTTEXT_FILE \033[0m"
     if [ -f $FASTTEXT_FILE ];
     then
         echo -e "\033[93m ------> FastText pretrained model is present \033[0m"
