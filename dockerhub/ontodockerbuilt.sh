@@ -76,7 +76,9 @@ then
         ./ontodockerbatch.sh $actnm
     elif [ $COMP_IND = "OAEI" ];
     then
-        ./ontodockeroaei.sh $actnm
+        echo -e "\033[31;3m Not possible to run OAEI docker image in local \033[0m"
+	echo -e "\033[31;3m You can still download the image by below command \033[0m"
+	echo -e "\033[31;3m docker pull jchakra1/ontosim_imgoaei:v1 \033[0m"
     fi
 else
     echo "\033[31m ERROR: Environment is  not recognised \033[0m"
