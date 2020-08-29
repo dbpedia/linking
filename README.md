@@ -8,3 +8,4 @@ In this workflow, we will explore reading and parsing the ontology and extractin
 ### Quickstart
 1. Project wiki: (https://github.com/dbpedia/linking/wiki)
 2. Project Setup: (https://github.com/dbpedia/linking/wiki/Setup_Guide)
+3. OntoConnect Docker Setup: (https://github.com/dbpedia/linking/wiki/OntoConnect-Docker-SetUP)
