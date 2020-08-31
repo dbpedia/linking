@@ -130,7 +130,6 @@ def ontoEval(data_src_nm, dist_ind):
 
         final_op = []
         for trgt_key in word_sim_info:
-            tmp_op = {"entity1": "", "entity2": "", "measure": ""}
 
             word_sim_lst = [[key, sim] for key, sim in word_sim_info[trgt_key].items()]
             meta_sim_lst = [[key, sim] for key, sim in meta_sim_info[trgt_key].items()]
@@ -149,12 +148,15 @@ def ontoEval(data_src_nm, dist_ind):
                             pred_sim_lst.append([word_sim_key, new_sim_val])
 
             pred_sim_sort = sorted(pred_sim_lst, key=lambda x: x[1], reverse=False)
-            tmp_op['entity1'] = trgt_key
+
             op = pred_sim_sort[0]
-            tmp_op['entity2'] = op[0]
-            # tmp_op['measure'] = op[1]
-            tmp_op['measure'] = 1.0
-            final_op.append(tmp_op)
+            if(op[1]<threshold):
+                tmp_op = {"entity1": "", "entity2": "", "measure": ""}
+                tmp_op['entity1'] = trgt_key
+                tmp_op['entity2'] = op[0]
+                # tmp_op['measure'] = op[1]
+                tmp_op['measure'] = 1.0
+                final_op.append(tmp_op)
 
         saveFinalOP(final_op, conf)
         time.sleep(cnst.wait_time)
