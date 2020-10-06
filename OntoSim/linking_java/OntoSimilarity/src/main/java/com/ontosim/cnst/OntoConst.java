@@ -42,5 +42,10 @@ public interface OntoConst {
 	String BASE_IND = "data:application/octet-stream;base64,";
 	
 	String PY_SERVICE_URL = "http://0.0.0.0:5000/OntoSimPyMain/ontorestservice/ontopy/task2";
-
+	
+	int vec_dim = 100;
+	int op_k=1;
+	double word_wt_ds = 0.5;
+	double meta_wt_ds = 0.5;
+	double threshold_ds = 0.04;
 }

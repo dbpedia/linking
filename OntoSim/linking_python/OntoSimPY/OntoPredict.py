@@ -19,14 +19,12 @@ if (torch.cuda.is_available()):
 else:
     print("CPU is available ")
 
-vector_dim = cnst.vec_dim
 def assignVar():
     conf = {
         'train_file': "ontodata/finalentity/source_final.json",
         'test_file': "ontodata/finalentity/target_final.json",
         'ws_fl_nm': "ontodata/output/word_sim/",
         'model_file': "model_final_",
-        'vector': vector_dim,
         'op_ms_fl_nm': "ontodata/output/word_sim/",
     }
 
@@ -38,8 +36,8 @@ def loadData(fl):
 
     return data
 
-def getmodel(conf, data_src_nm):
-    model = TreeLSTM(conf["vector"], conf["vector"], device)
+def getmodel(conf, data_src_nm, vec_dim):
+    model = TreeLSTM(vec_dim, vec_dim, device)
 
     if(data_src_nm == cnst.ds_nm_1):
         model_fl_nm = cnst.onto_model_path + conf["model_file"] + 'anatomy.pt'
@@ -67,14 +65,14 @@ def peek(stack):
 
 
 # SHUNTING YARD ALGORITHM
-def populateResultantVec(token_lst, embeddings):
+def populateResultantVec(token_lst, embeddings, db_param):
     result = np.array([])
     equations = []
     for token in token_lst:
         if (token == ')'):
             top = peek(equations)
             count = 0
-            tmp_result = [0] * vector_dim
+            tmp_result = [0] * db_param["vec_dim"]
             while top[1] is not None and top[1] != '(':
                 # if (src_embed_key == 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#CSNK2A1_wt_Allele'):
                 #     print("top-1: "+str(top[1]))
@@ -101,7 +99,7 @@ def populateResultantVec(token_lst, embeddings):
     result = tmp_result
     return result
 
-def populateEntityVec(entity_key, embeddings):
+def populateEntityVec(entity_key, embeddings, db_param):
     if ("(" in entity_key):
         expression = entity_key.replace("(", "( ").replace(",", " , ").replace(")", " ) ")
         tokens = expression.split(" ")
@@ -109,22 +107,22 @@ def populateEntityVec(entity_key, embeddings):
         for token in tokens:
             if ("" != token and " " != token and "," != token):
                 token_lst.append(token)
-        result_vec = populateResultantVec(token_lst, embeddings)
+        result_vec = populateResultantVec(token_lst, embeddings, db_param)
     else:
         entity_key = entity_key.replace("<", "").replace(">", "")
         result_vec = getEmbedVec(entity_key, embeddings)
 
     return result_vec
 
-def getgenerateTree(treetyp, obj_json, embeddings):
+def getgenerateTree(treetyp, obj_json, embeddings, db_param):
     lst = list()
     for obj_key in obj_json:
-        obj_vec = populateEntityVec(obj_key, embeddings)
+        obj_vec = populateEntityVec(obj_key, embeddings, db_param)
         lst.append(Tree(obj_key, treetyp[0], obj_vec))
 
     return lst
 
-def generateSrcTrgtTree(trgt_key, src_key, src_embeddings, trgt_embeddings):
+def generateSrcTrgtTree(trgt_key, src_key, src_embeddings, trgt_embeddings, db_param):
 
     t_vec = getEmbedVec(trgt_key, trgt_embeddings)
     trgt_root_tree = Tree(trgt_key, TreeTyp.ROOT[0], t_vec)
@@ -141,12 +139,12 @@ def generateSrcTrgtTree(trgt_key, src_key, src_embeddings, trgt_embeddings):
     src_tmp_obj = src_embed_obj["parentCls"]
     if (trgt_tmp_obj and trgt_tmp_obj[0].strip() != thing_obj):
         # target parent subtree
-        trgt_tmp_tree = getgenerateTree(TreeTyp.PARENT, trgt_embed_obj["parentCls"],trgt_embeddings)
+        trgt_tmp_tree = getgenerateTree(TreeTyp.PARENT, trgt_embed_obj["parentCls"],trgt_embeddings, db_param)
         trgt_child_node_lst = trgt_child_node_lst + copy.deepcopy(trgt_tmp_tree)
     if (trgt_tmp_obj and trgt_tmp_obj[0].strip() != thing_obj
             and src_tmp_obj and src_tmp_obj[0].strip() != thing_obj):
         # source parent subtree
-        src_tmp_tree = getgenerateTree(TreeTyp.PARENT, src_embed_obj["parentCls"], src_embeddings)
+        src_tmp_tree = getgenerateTree(TreeTyp.PARENT, src_embed_obj["parentCls"], src_embeddings, db_param)
         src_child_node_lst = src_child_node_lst + copy.deepcopy(src_tmp_tree)
 
     # if child of target exist, then only add child in source
@@ -154,12 +152,12 @@ def generateSrcTrgtTree(trgt_key, src_key, src_embeddings, trgt_embeddings):
     src_tmp_obj = src_embed_obj["childCls"]
     if (trgt_tmp_obj and trgt_tmp_obj[0].strip() != nothing_obj):
         # target child subtree
-        trgt_tmp_tree = getgenerateTree(TreeTyp.CHILD, trgt_embed_obj["childCls"], trgt_embeddings)
+        trgt_tmp_tree = getgenerateTree(TreeTyp.CHILD, trgt_embed_obj["childCls"], trgt_embeddings, db_param)
         trgt_child_node_lst = trgt_child_node_lst + copy.deepcopy(trgt_tmp_tree)
     if (trgt_tmp_obj and trgt_tmp_obj[0].strip() != nothing_obj and
             src_tmp_obj and src_tmp_obj[0].strip() != nothing_obj):
         # source child subtree
-        src_tmp_tree = getgenerateTree(TreeTyp.CHILD, src_embed_obj["childCls"], src_embeddings)
+        src_tmp_tree = getgenerateTree(TreeTyp.CHILD, src_embed_obj["childCls"], src_embeddings, db_param)
         src_child_node_lst = src_child_node_lst + copy.deepcopy(src_tmp_tree)
 
     # if equivalent class of target exist, then only add equivalent in source
@@ -168,10 +166,10 @@ def generateSrcTrgtTree(trgt_key, src_key, src_embeddings, trgt_embeddings):
 
     if (trgt_tmp_obj and src_tmp_obj):
         # target equivalent subtree
-        trgt_tmp_tree = getgenerateTree(TreeTyp.EQCLS, trgt_embed_obj["eqCls"], trgt_embeddings)
+        trgt_tmp_tree = getgenerateTree(TreeTyp.EQCLS, trgt_embed_obj["eqCls"], trgt_embeddings, db_param)
         trgt_child_node_lst = trgt_child_node_lst + copy.deepcopy(trgt_tmp_tree)
         # source equivalent subtree
-        src_tmp_tree = getgenerateTree(TreeTyp.EQCLS, src_embed_obj["eqCls"], src_embeddings)
+        src_tmp_tree = getgenerateTree(TreeTyp.EQCLS, src_embed_obj["eqCls"], src_embeddings, db_param)
         src_child_node_lst = src_child_node_lst + copy.deepcopy(src_tmp_tree)
 
     # if disjoint class of target exist, then only add disjoint in source
@@ -179,10 +177,10 @@ def generateSrcTrgtTree(trgt_key, src_key, src_embeddings, trgt_embeddings):
     src_tmp_obj = src_embed_obj["disjointCls"]
     if (trgt_tmp_obj and src_tmp_obj):
         # target disjoint subtree
-        trgt_tmp_tree = getgenerateTree(TreeTyp.DISJCLS, trgt_embed_obj["disjointCls"], trgt_embeddings)
+        trgt_tmp_tree = getgenerateTree(TreeTyp.DISJCLS, trgt_embed_obj["disjointCls"], trgt_embeddings, db_param)
         trgt_child_node_lst = trgt_child_node_lst + copy.deepcopy(trgt_tmp_tree)
         # source disjoint subtree
-        src_tmp_tree = getgenerateTree(TreeTyp.DISJCLS, src_embed_obj["disjointCls"], src_embeddings)
+        src_tmp_tree = getgenerateTree(TreeTyp.DISJCLS, src_embed_obj["disjointCls"], src_embeddings, db_param)
         src_child_node_lst = src_child_node_lst + copy.deepcopy(src_tmp_tree)
 
     # if restriction class of target exist, then only add restriction in source
@@ -190,10 +188,10 @@ def generateSrcTrgtTree(trgt_key, src_key, src_embeddings, trgt_embeddings):
     src_tmp_obj = src_embed_obj["restriction"]
     if (trgt_tmp_obj and src_tmp_obj):
         # target restriction subtree
-        trgt_tmp_tree = getgenerateTree(TreeTyp.RES, trgt_embed_obj["restriction"], trgt_embeddings)
+        trgt_tmp_tree = getgenerateTree(TreeTyp.RES, trgt_embed_obj["restriction"], trgt_embeddings, db_param)
         trgt_child_node_lst = trgt_child_node_lst + copy.deepcopy(trgt_tmp_tree)
         # source restriction subtree
-        src_tmp_tree = getgenerateTree(TreeTyp.RES, src_embed_obj["restriction"], src_embeddings)
+        src_tmp_tree = getgenerateTree(TreeTyp.RES, src_embed_obj["restriction"], src_embeddings, db_param)
         src_child_node_lst = src_child_node_lst + copy.deepcopy(src_tmp_tree)
 
     trgt_root_tree.children = trgt_child_node_lst
@@ -259,19 +257,19 @@ def getSimilarityDistUtil(trgt_tree, src_tree, model, dist_ind):
 
         return sim_dist
 
-def getSimilarityDist(target_key, src_key, train_data, test_data, model, dist_ind):
-    trgt_tree, src_tree = generateSrcTrgtTree(target_key, src_key, train_data, test_data)
+def getSimilarityDist(target_key, src_key, train_data, test_data, model, dist_ind, db_param):
+    trgt_tree, src_tree = generateSrcTrgtTree(target_key, src_key, train_data, test_data, db_param)
     sim_dist = getSimilarityDistUtil(trgt_tree, src_tree, model, dist_ind)
     return sim_dist
 
-def getPredMetaData(word_sim, train_data, test_data, model, dist_ind):
+def getPredMetaData(word_sim, train_data, test_data, model, dist_ind, db_param):
 
     pred_sim = OrderedDict()
     for target_key in word_sim:
         sources = OrderedDict()
         max_dist = 0
         for src_key in word_sim[target_key]:
-            sim_dist = getSimilarityDist(target_key, src_key, train_data, test_data, model, dist_ind)
+            sim_dist = getSimilarityDist(target_key, src_key, train_data, test_data, model, dist_ind, db_param)
             sources[src_key] = sim_dist
             if(sim_dist>max_dist):
                 max_dist = sim_dist
@@ -289,12 +287,12 @@ def saveOp(op_meta, op_fl_nm):
         json.dump(op_meta, outfile, indent=4)
 
 #################### Main Code START ####################
-def ontoPredict(data_src_nm, dist_ind):
+def ontoPredict(dist_ind, db_param):
     try:
         print("#################### OntoPredict START ####################")
         conf = assignVar()
 
-        model = getmodel(conf, data_src_nm)
+        model = getmodel(conf, db_param["db_nm"], db_param["vec_dim"])
 
         train_data = loadData(conf['train_file'])
         test_data = loadData(conf['test_file'])
@@ -304,7 +302,7 @@ def ontoPredict(data_src_nm, dist_ind):
         elif(dist_ind == cnst.word_sim_ind_2): #word_sim_ind_2 = "euclidean"
             word_sim = loadData(conf["ws_fl_nm"] + "word_sim_euclidean.json")
 
-        pred_sim = getPredMetaData(word_sim, train_data, test_data, model, dist_ind)
+        pred_sim = getPredMetaData(word_sim, train_data, test_data, model, dist_ind, db_param)
 
         if(dist_ind == cnst.word_sim_ind_1): #word_sim_ind_1 = "cosine"
             saveOp(pred_sim, conf["op_ms_fl_nm"] + "meta_sim_cosine.json")

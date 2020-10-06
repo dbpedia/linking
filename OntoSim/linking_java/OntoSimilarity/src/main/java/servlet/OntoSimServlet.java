@@ -60,8 +60,16 @@ public class OntoSimServlet extends HttpServlet {
 				List<FileItem> multiparts = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
 
 				OntoServiceModel ontoServiceModel = new OntoServiceModel();
+				
+				//Make it finalize before submit
 				OntoDbModel ontoDbModel = new OntoDbModel();
 				ontoDbModel.setDb_nm(OntoConst.DS_1);
+				ontoDbModel.setVec_dim(OntoConst.vec_dim);
+				ontoDbModel.setWord_wt_ds(OntoConst.word_wt_ds);
+				ontoDbModel.setMeta_wt_ds(OntoConst.meta_wt_ds);
+				ontoDbModel.setOp_k(OntoConst.op_k);
+				ontoDbModel.setThreshold_ds(OntoConst.threshold_ds);
+				
 				ontoServiceModel.setDb(ontoDbModel);
 
 				for (FileItem item : multiparts) {

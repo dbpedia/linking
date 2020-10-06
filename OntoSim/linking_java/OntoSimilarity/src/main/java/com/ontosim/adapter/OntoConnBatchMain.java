@@ -9,6 +9,9 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontosim.cnst.OntoConst;
+import com.ontosim.model.OntoDbModel;
+
 public class OntoConnBatchMain {
 	
 	private static final Logger logger = LoggerFactory.getLogger(OntoConnBatchMain.class);
@@ -30,7 +33,17 @@ public class OntoConnBatchMain {
 			
 			// Calling OntoConnController
 			OntoConnController ontoConnController = new OntoConnController();
-			ontoConnController.ontoConnController(srcFlPath, trgtFlPath, resultsPath, "Anatomy");
+						
+			//Make it finalize before submit
+			OntoDbModel ontoDbModel = new OntoDbModel();
+			ontoDbModel.setDb_nm(OntoConst.DS_1);
+			ontoDbModel.setVec_dim(OntoConst.vec_dim);
+			ontoDbModel.setWord_wt_ds(OntoConst.word_wt_ds);
+			ontoDbModel.setMeta_wt_ds(OntoConst.meta_wt_ds);
+			ontoDbModel.setOp_k(OntoConst.op_k);
+			ontoDbModel.setThreshold_ds(OntoConst.threshold_ds);
+			
+			ontoConnController.ontoConnController(srcFlPath, trgtFlPath, resultsPath, ontoDbModel);
 						
 		}catch(Exception e){
 			logger.error("Exception occur:- ", e);

@@ -87,28 +87,77 @@ def saveFinalOP(final_op, conf):
     type.text = '??'
 
     for op in final_op:
-        map = SubElement(alignment, 'map')
-        cell = SubElement(map, 'Cell')
-        entity1 = SubElement(cell, 'entity1')
-        entity1.set('rdf:resource', op['entity1'])
-        entity2 = SubElement(cell, 'entity2')
-        entity2.set('rdf:resource', op['entity2'])
-        measure = SubElement(cell, 'measure')
-        measure.set('rdf:datatype', 'xsd:float')
-        measure.text = str(op['measure'])
-        relation = SubElement(cell, 'relation')
-        relation.text = '='
+        if(op['entity1'] not in cnst.CONSTANT_REMOVE_LST and op['entity2'] not in cnst.CONSTANT_REMOVE_LST):
+            map = SubElement(alignment, 'map')
+            cell = SubElement(map, 'Cell')
+            entity1 = SubElement(cell, 'entity1')
+            entity1.set('rdf:resource', op['entity1'])
+            entity2 = SubElement(cell, 'entity2')
+            entity2.set('rdf:resource', op['entity2'])
+            measure = SubElement(cell, 'measure')
+            measure.set('rdf:datatype', 'xsd:float')
+            measure.text = str(op['measure'])
+            relation = SubElement(cell, 'relation')
+            relation.text = '='
 
 
     with open(cnst.code_path + conf["op_fl"], "w") as f:
         f.write(prettify(root))
 
 
-def ontoEval(data_src_nm, dist_ind):
+#This only for testing purpose
+##Testing purpose start
+def print_values(trgt_key, word_sim_lst_modf, meta_sim_lst_modf, pred_sim_lst, txt_fl, src_data, trgt_data):
+    txt_fl.write("########################################## \n")
+    trgt_key_str = trgt_data.get(trgt_key)["lbl"]
+    prnt_vl = trgt_key + " (" + trgt_key_str + ")"
+    txt_fl.write(prnt_vl + "\n")
+
+    txt_fl.write("Word Similarity \n")
+    word_sim_lst_modf_sort = sorted(word_sim_lst_modf, key=lambda x: x[1], reverse=False)
+    for word_sim in word_sim_lst_modf_sort:
+        word_sim_key, word_sim_val = word_sim[0], word_sim[1]
+        word_sim_key_str = src_data.get(word_sim_key)["lbl"]
+        prnt_vl = word_sim_key +" ("+word_sim_key_str+") - " +str( word_sim_val)
+        txt_fl.write(prnt_vl + "\n")
+
+    txt_fl.write("Meta Similarity \n")
+    meta_sim_lst_modf_sort = sorted(meta_sim_lst_modf, key=lambda x: x[1], reverse=False)
+    for meta_sim in meta_sim_lst_modf_sort:
+        meta_sim_key, meta_sim_val = meta_sim[0], meta_sim[1]
+        meta_sim_key_str = src_data.get(meta_sim_key)["lbl"]
+        prnt_vl = meta_sim_key + " (" + meta_sim_key_str + ") - " + str(meta_sim_val)
+        txt_fl.write(prnt_vl + "\n")
+
+    txt_fl.write("Pred Similarity \n")
+    pred_sim_lst_sort = sorted(pred_sim_lst, key=lambda x: x[1], reverse=False)
+    for pred_sim in pred_sim_lst_sort:
+        pred_sim_key, pred_sim_val = pred_sim[0], pred_sim[1]
+        pred_sim_key_str = src_data.get(pred_sim_key)["lbl"]
+        prnt_vl = pred_sim_key + " (" + pred_sim_key_str + ") - " + str(pred_sim_val)
+        txt_fl.write(prnt_vl + "\n")
+
+    txt_fl.write("########################################## \n")
+
+##Testing purpose end
+
+def ontoEval(dist_ind, db_param):
+
     try:
         print("#################### OntoEvaluation START ####################")
 
         conf = assignVar()
+
+        ##Testing purpose start
+        # src_data = None
+        # trgt_data = None
+        # with open(cnst.code_path + 'ontodata/finalentity/source_final.json') as f:
+        #     src_data = json.load(f)
+        # with open(cnst.code_path + 'ontodata/finalentity/target_final.json') as f:
+        #     trgt_data = json.load(f)
+        # txt_fl = open("/Users/jaydeep/jaydeep_workstation/ASU/Research/oaei/output/pred_op.txt", "a")
+        ##Testing purpose stop
+
 
         word_sim_info = None
         meta_sim_info = None
@@ -123,10 +172,10 @@ def ontoEval(data_src_nm, dist_ind):
         word_wt = 0.5
         meta_wt = 0.5
         threshold = 0.0
-        if (data_src_nm == cnst.ds_nm_1):
-            word_wt = 0.5
-            meta_wt = 0.5
-            threshold = 0.01
+        if (db_param["db_nm"] == cnst.ds_nm_1):
+            word_wt = db_param["word_wt_ds"]
+            meta_wt = db_param["meta_wt_ds"]
+            threshold = db_param["threshold_ds"]
 
         final_op = []
         for trgt_key in word_sim_info:
@@ -149,17 +198,28 @@ def ontoEval(data_src_nm, dist_ind):
 
             pred_sim_sort = sorted(pred_sim_lst, key=lambda x: x[1], reverse=False)
 
-            op = pred_sim_sort[0]
-            if(op[1]<threshold):
+            pred_final_op_lst = []
+            for val, msr in pred_sim_sort:
+                if(msr<threshold and len(pred_final_op_lst)<db_param["op_k"]):
+                    pred_final_op_lst.append(val)
+
+            join_str=cnst.join_str_cnst
+            if(len(pred_final_op_lst)>0):
+
+                ##Testing purpose start
+                # print_values(trgt_key, word_sim_lst_modf, meta_sim_lst_modf, pred_sim_lst, txt_fl, src_data, trgt_data)
+                ##Testing purpose stop
+
                 tmp_op = {"entity1": "", "entity2": "", "measure": ""}
                 tmp_op['entity1'] = trgt_key
-                tmp_op['entity2'] = op[0]
-                # tmp_op['measure'] = op[1]
+                tmp_op['entity2'] = join_str.join(pred_final_op_lst)
                 tmp_op['measure'] = 1.0
                 final_op.append(tmp_op)
 
         saveFinalOP(final_op, conf)
         time.sleep(cnst.wait_time)
+
+        # txt_fl.close()
 
     except Exception as exp:
         raise exp

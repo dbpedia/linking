@@ -64,7 +64,7 @@ chk_build_ind(){
 # web/batch/oaei
 COMP_IND="WEB"
 chk_comp_ind(){
-    echo -e "\033[93m --> What you want to build [WEB/BATCH/OAEI] ?  \033[0m"
+    echo -e "\033[93m --> Choose any one option [WEB/BATCH/OAEI] ?  \033[0m"
     read comp_ind
     if [ "$comp_ind" == "batch" ] || [ "$comp_ind" == "BATCH" ];
     then

@@ -30,7 +30,7 @@ public class OntoConnController {
 	
 	
 
-	public void ontoConnController(String srcFlPath, String trgtFlPath, String opFlPath, String taskInd) throws Exception {
+	public void ontoConnController(String srcFlPath, String trgtFlPath, String opFlPath, OntoDbModel ontoDbModel) throws Exception {
 
 		logger.info("#################### ontoConnController START ####################");		
 		
@@ -38,9 +38,6 @@ public class OntoConnController {
 		File trgtFl = new File(trgtFlPath);		
 
 		OntoServiceModel ontoServiceModel = new OntoServiceModel();
-
-		OntoDbModel ontoDbModel = new OntoDbModel();
-		ontoDbModel.setDb_nm(taskInd);
 		ontoServiceModel.setDb(ontoDbModel);
 		
 		logger.info("SOURCE file computing - ontoSimBL");

@@ -1,7 +1,6 @@
 from OntoSimImports import *
 import OntoSimConstants as cnst
 
-
 def modfWord(word):
     word = word.lower()
     wordnet_lemmatizer = WordNetLemmatizer()
@@ -70,6 +69,7 @@ def int_to_roman(input):
 
 def crtAltLbl(conf, data, removed_fl):
     err_key = []
+
     for key in data.keys():
         alt_word = ""
 

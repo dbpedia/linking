@@ -1,8 +1,6 @@
 from OntoSimImports import *
 import OntoSimConstants as cnst
 
-vec_dim = cnst.vec_dim
-
 
 #~~~~~~~~~~~~~~ Vector File ~~~~~~~~~~~~~~#
 dict_fl_nm = "dict_fast.json"
@@ -21,14 +19,12 @@ def assignVar():
             {
                 'dict_fl_nm': 'ontodata/dict/dict_fast.json',
                 'ip_fl_nm': 'ontodata/modifylbl/source.json',
-                'op_fl_nm': 'ontodata/fastentity/source_fast.json',
-                'vec_dim': vec_dim
+                'op_fl_nm': 'ontodata/fastentity/source_fast.json'
             },
             {
                 'dict_fl_nm': 'ontodata/dict/dict_fast.json',
                 'ip_fl_nm': 'ontodata/modifylbl/target.json',
-                'op_fl_nm': 'ontodata/fastentity/target_fast.json',
-                'vec_dim': vec_dim
+                'op_fl_nm': 'ontodata/fastentity/target_fast.json'
             }
         ]
     }
@@ -52,11 +48,11 @@ def loadFile(conf):
     return data
 
 
-def getFastTxtVecSimple(conf, data, entity_dict_vec):
+def getFastTxtVecSimple(conf, data, entity_dict_vec, db_param):
 
     for key in data:
         words = data[key]['altLbl'].split()
-        embed_vec = np.asarray([0.0] * conf["vec_dim"]) #eg 300d for fastText
+        embed_vec = np.asarray([0.0] * db_param["vec_dim"]) #eg 300d for fastText
         for word in words:
             embed_vec = np.add(embed_vec, np.asarray(entity_dict_vec[word]))
 
@@ -65,11 +61,11 @@ def getFastTxtVecSimple(conf, data, entity_dict_vec):
     return data
 
 
-def getFastTxtVecMean(conf, data, entity_dict_vec):
+def getFastTxtVecMean(conf, data, entity_dict_vec, db_param):
 
     for key in data:
         words = data[key]['altLbl'].split()
-        embed_vec = np.asarray([0.0] * conf["vec_dim"]) #eg 300d for fastText
+        embed_vec = np.asarray([0.0] * db_param["vec_dim"]) #eg 300d for fastText
         for word in words:
             embed_vec = np.add(embed_vec, np.asarray(entity_dict_vec[word]))
 
@@ -95,7 +91,7 @@ def saveFile(fast_dict, conf):
 
 
 #################### MAIN CODE START ####################
-def entityToVec(ind):
+def entityToVec(ind, db_param):
     try:
         print("#################### EntityToVector START ####################")
         conf = assignVar()
@@ -122,7 +118,7 @@ def entityToVec(ind):
             #     for conf_val in conf_arr:
             #       entity_dict_vec = loadDictVec(conf_val)
             #       data = loadFile(conf_val)
-            #       fast_dict = getFastTxtVecSimple(conf_val, data, entity_dict_vec)
+            #       fast_dict = getFastTxtVecSimple(conf_val, data, entity_dict_vec, db_param)
             #       saveFile(fast_dict, conf_val)
             #       time.sleep(cnst.wait_time)
 
@@ -131,7 +127,7 @@ def entityToVec(ind):
             for conf_val in conf_arr:
                 entity_dict_vec = loadDictVec(conf_val)
                 data = loadFile(conf_val)
-                fast_dict = getFastTxtVecMean(conf_val, data, entity_dict_vec)
+                fast_dict = getFastTxtVecMean(conf_val, data, entity_dict_vec, db_param)
                 saveFile(fast_dict, conf_val)
                 time.sleep(cnst.wait_time)
 

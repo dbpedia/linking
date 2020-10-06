@@ -32,7 +32,12 @@
     "msg_cause": ""
   },
   "db" : {
-    "db_nm" : ""
+    "db_nm" : "",
+    "vec_dim": 0,
+    "op_k": 0,
+    "word_wt_ds": 0,
+    "meta_wt_ds": 0,
+    "threshold_ds": 0
   }
 
 }

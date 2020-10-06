@@ -23,14 +23,14 @@ class OntoSimPyMain(Resource):
             retVal = ""
             print(sys.version)
             req_json = request.get_json()
-            data_src_nm = req_json['db']['db_nm']
-            print("Module :- "+str(data_src_nm))
+            data_param = req_json['db']
+            print("Module :- "+str(data_param['db_nm']))
 
             ###Save the request data in json file(source.json, target.json)
             saveIntData(req_json)
 
             ###### modify labels of each entity
-            modifyLblMain(data_src_nm)
+            modifyLblMain(data_param['db_nm'])
 
             ###### create dictionary from source and target entities
             crtDictMain()
@@ -41,7 +41,7 @@ class OntoSimPyMain(Resource):
 
             #####cnst.frm_vic_1 generate entity vectors from model
             #####cnst.frm_vic_2 get entity vectors from dictionary vector file
-            entityToVec(cnst.frm_vic_1)
+            entityToVec(cnst.frm_vic_1, data_param)
 
             ## Rescaling the data(both train and test)
             ## As we are using LSTM, the output has tobe in range [-1,+1]
@@ -56,26 +56,28 @@ class OntoSimPyMain(Resource):
             ## Predict vector for each test data
             #####word_sim_ind_1 = "cosine"
             #####word_sim_ind_2 = "euclidean"
-            ontoPredict(data_src_nm, cnst.word_sim_ind_1)
+            ontoPredict(cnst.word_sim_ind_1, data_param)
 
             ## Predict vector for each test data
             #####word_sim_ind_1 = "cosine"
             #####word_sim_ind_2 = "euclidean"
-            ontoEval(data_src_nm, cnst.word_sim_ind_1)
+            ontoEval(cnst.word_sim_ind_1, data_param)
 
 
             ## it populates the rdf and zip, and delete all the intermediate files
             retVal = ontoFinish()
             retVal = json.dumps(retVal)
+
         except Exception as e:
             print(traceback.format_exc())
-            Onto_Json_Fl = "ontosim.json"
+            Onto_Json_Fl = cnst.code_path + "ontosim.json"
             with open(Onto_Json_Fl) as json_file:
                 retVal = json.load(json_file)
 
             retVal['msg']['msg_val'] = "Error Happened"
             retVal['msg']['msg_cause'] = str(e)
             retVal = json.dumps(retVal)
+
 
         return retVal
 
